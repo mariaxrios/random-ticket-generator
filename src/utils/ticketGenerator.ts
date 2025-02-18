@@ -124,44 +124,56 @@ const getRandomQuantity = (unit: string): number => {
   }
 };
 
+const getEcoLabel = (): string => {
+  const labels = ["ECO", "BIO", "Ecológico", "Natural"];
+  return labels[Math.floor(Math.random() * labels.length)];
+};
+
 const generateProducts = (): Product[] => {
   const numProducts = Math.floor(Math.random() * 6 + 30); // 30-35 productos
   const products: Product[] = [];
   const categories = [...new Set(PRODUCTS.map(p => p.category))];
+  const usedProducts = new Set<string>(); // Para evitar repeticiones
   
   // Asegurarse de incluir productos de todas las categorías
   categories.forEach(category => {
     const categoryProducts = PRODUCTS.filter(p => p.category === category);
     const numFromCategory = Math.floor(Math.random() * 3) + 1; // 1-3 productos por categoría
     
-    const selectedProducts = categoryProducts
+    const availableProducts = categoryProducts.filter(p => !usedProducts.has(p.name));
+    const selectedProducts = availableProducts
       .sort(() => Math.random() - 0.5)
       .slice(0, numFromCategory);
     
     selectedProducts.forEach(product => {
       const quantity = getRandomQuantity(product.unit);
+      const isEco = Math.random() < 0.5; // 50% probabilidad de ser eco
+      usedProducts.add(product.name); // Marcar el producto como usado
+      
       products.push({
         ...product,
         quantity,
         discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0, // 20% probabilidad de descuento (5-20%)
-        isEco: Math.random() < 0.5, // 50% probabilidad de ser eco
+        isEco,
       });
     });
   });
 
   // Añadir productos adicionales hasta alcanzar el mínimo
   while (products.length < numProducts) {
-    const randomProduct = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
-    // Evitar repeticiones excesivas (máximo 2 del mismo producto)
-    if (products.filter(p => p.name === randomProduct.name).length < 2) {
-      const quantity = getRandomQuantity(randomProduct.unit);
-      products.push({
-        ...randomProduct,
-        quantity,
-        discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
-        isEco: Math.random() < 0.5,
-      });
-    }
+    const availableProducts = PRODUCTS.filter(p => !usedProducts.has(p.name));
+    if (availableProducts.length === 0) break; // Si no hay más productos disponibles
+
+    const randomProduct = availableProducts[Math.floor(Math.random() * availableProducts.length)];
+    const quantity = getRandomQuantity(randomProduct.unit);
+    usedProducts.add(randomProduct.name);
+    
+    products.push({
+      ...randomProduct,
+      quantity,
+      discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
+      isEco: Math.random() < 0.5,
+    });
   }
 
   return products.sort((a, b) => a.category.localeCompare(b.category));

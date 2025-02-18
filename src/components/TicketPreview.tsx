@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Ticket, Product } from "../types/ticket";
 import Barcode from "react-barcode";
@@ -33,6 +32,11 @@ const calculateVAT = (products: Product[], vatRate: number) => {
     }, 0);
 };
 
+const getEcoLabel = (): string => {
+  const labels = ["ECO", "BIO", "Ecológico", "Natural"];
+  return labels[Math.floor(Math.random() * labels.length)];
+};
+
 const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const total = calculateTotal(ticket.products);
   const vat4 = calculateVAT(ticket.products, 4);
@@ -59,7 +63,9 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
             <div key={index} className="flex justify-between text-xs">
               <div className="flex-1">
                 <span className="font-semibold">{product.name}</span>
-                {product.isEco && <span className="text-green-500 ml-1">(ECO)</span>}
+                {product.isEco && (
+                  <span className="text-green-500 ml-1">({getEcoLabel()})</span>
+                )}
                 <br />
                 <span className="text-gray-600">
                   {product.quantity} {product.unit} x {formatCurrency(product.price)}
