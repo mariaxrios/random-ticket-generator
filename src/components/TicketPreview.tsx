@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Ticket, Product } from "../types/ticket";
+import Barcode from "react-barcode";
 
 interface TicketPreviewProps {
   ticket: Ticket;
@@ -119,8 +120,15 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           <p className="text-gray-600">
             {ticket.store.phone} | {ticket.store.website}
           </p>
-          <div className="mt-4">
-            <div className="text-center text-[10px] font-light">{ticket.barcode}</div>
+          <div className="mt-4 flex justify-center">
+            <Barcode 
+              value={ticket.barcode}
+              width={1.5}
+              height={50}
+              fontSize={12}
+              margin={0}
+              displayValue={true}
+            />
           </div>
         </div>
       </div>
