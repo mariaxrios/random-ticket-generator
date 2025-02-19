@@ -44,10 +44,6 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const vat10 = calculateVAT(ticket.products, 10);
   const vat21 = calculateVAT(ticket.products, 21);
 
-  const totalItems = ticket.products.reduce((sum, p) => sum + p.quantity, 0);
-  const ecoProducts = ticket.products.filter(p => p.isEco).length;
-  const ecoPercentage = Math.round((ecoProducts / ticket.products.length) * 100);
-
   return (
     <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden animate-fade-in">
       <div className="p-6 font-mono text-sm space-y-4">
@@ -102,12 +98,6 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Stats */}
-        <div className="text-xs border-t pt-2 space-y-1">
-          <p>Total artículos: {totalItems.toFixed(2)}</p>
-          <p>Productos ecológicos: {ecoPercentage}%</p>
         </div>
 
         {/* Totals */}
