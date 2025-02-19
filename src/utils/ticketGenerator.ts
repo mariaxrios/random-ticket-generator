@@ -213,6 +213,9 @@ export const generateTicket = (): Ticket => {
     timestamp,
     paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
     ticketNumber: Math.floor(Math.random() * 900000 + 100000).toString(),
+    cashierNumber: Math.floor(Math.random() * 20) + 1,
+    employeeId: `E${Math.floor(Math.random() * 9000 + 1000)}`,
+    employeeName: "Juan García",
     barcode: generateBarcode(timestamp),
   };
 };

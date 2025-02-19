@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Ticket, Product } from "../types/ticket";
 import Barcode from "react-barcode";
@@ -43,6 +44,10 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const vat10 = calculateVAT(ticket.products, 10);
   const vat21 = calculateVAT(ticket.products, 21);
 
+  const totalItems = ticket.products.reduce((sum, p) => sum + p.quantity, 0);
+  const ecoProducts = ticket.products.filter(p => p.isEco).length;
+  const ecoPercentage = Math.round((ecoProducts / ticket.products.length) * 100);
+
   return (
     <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden animate-fade-in">
       <div className="p-6 font-mono text-sm space-y-4">
@@ -52,19 +57,26 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           <p>{ticket.store.address}</p>
           <p>NIF: {ticket.store.nif}</p>
           <p>{ticket.store.website}</p>
-          <p className="text-xs text-gray-600">
-            {ticket.timestamp.toLocaleDateString("es-ES")} - {ticket.timestamp.toLocaleTimeString("es-ES")}
-          </p>
+        </div>
+
+        {/* Ticket Info */}
+        <div className="text-xs grid grid-cols-2 gap-1">
+          <p>Ticket: {ticket.ticketNumber}</p>
+          <p>Fecha: {ticket.timestamp.toLocaleDateString("es-ES")}</p>
+          <p>Caja: {ticket.cashierNumber}</p>
+          <p>Hora: {ticket.timestamp.toLocaleTimeString("es-ES")}</p>
+          <p>Empleado: {ticket.employeeId}</p>
+          <p>Nombre: {ticket.employeeName}</p>
         </div>
 
         {/* Products */}
-        <div className="space-y-2">
+        <div className="space-y-3 border-t pt-3">
           {ticket.products.map((product, index) => (
             <div key={index} className="flex justify-between text-xs">
               <div className="flex-1">
                 <span className="font-semibold">{product.name}</span>
                 {product.isEco && (
-                  <span className="text-green-500 ml-1">({getEcoLabel()})</span>
+                  <span className="text-gray-600 ml-1 text-[10px]">({getEcoLabel()})</span>
                 )}
                 <br />
                 <span className="text-gray-600">
@@ -90,6 +102,12 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Stats */}
+        <div className="text-xs border-t pt-2 space-y-1">
+          <p>Total artículos: {totalItems.toFixed(2)}</p>
+          <p>Productos ecológicos: {ecoPercentage}%</p>
         </div>
 
         {/* Totals */}

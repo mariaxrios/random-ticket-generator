@@ -24,5 +24,8 @@ export interface Ticket {
   timestamp: Date;
   paymentMethod: "cash" | "card" | "contactless" | "bizum";
   ticketNumber: string;
+  cashierNumber: number;
+  employeeId: string;
+  employeeName: string;
   barcode: string;
 }
