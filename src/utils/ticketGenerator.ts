@@ -11,6 +11,18 @@ const STORE_NAMES = [
 const CITIES = ["Madrid", "Barcelona", "Valencia", "Sevilla", "Bilbao"];
 const STREETS = ["Gran Vía", "Paseo de Gracia", "Calle Mayor", "Avenida Principal", "Plaza Central"];
 
+const NOMBRES = [
+  "Juan", "María", "Carlos", "Ana", "Miguel", 
+  "Laura", "David", "Carmen", "Antonio", "Isabel",
+  "José", "Patricia", "Francisco", "Lucía", "Alberto"
+];
+
+const APELLIDOS = [
+  "García", "Rodríguez", "López", "Martínez", "Sánchez",
+  "González", "Pérez", "Fernández", "Gómez", "Martín",
+  "Jiménez", "Ruiz", "Hernández", "Díaz", "Moreno"
+];
+
 const generateStore = (): Store => {
   const storeIndex = Math.floor(Math.random() * STORE_NAMES.length);
   const storeName = STORE_NAMES[storeIndex];
@@ -210,6 +222,12 @@ const generateBarcode = (timestamp: Date): string => {
   return `${storeId}${ticketNum}${date}${checksum}`;
 };
 
+const generateEmployeeName = (): string => {
+  const nombre = NOMBRES[Math.floor(Math.random() * NOMBRES.length)];
+  const apellido = APELLIDOS[Math.floor(Math.random() * APELLIDOS.length)];
+  return `${nombre} ${apellido}`;
+};
+
 export const generateTicket = (totalItems: number = 30, ecoPercentage: number = 50): Ticket => {
   const timestamp = new Date();
   const paymentMethods = ["cash", "card", "contactless", "bizum"] as const;
@@ -222,7 +240,7 @@ export const generateTicket = (totalItems: number = 30, ecoPercentage: number = 
     ticketNumber: Math.floor(Math.random() * 900000 + 100000).toString(),
     cashierNumber: Math.floor(Math.random() * 20) + 1,
     employeeId: `E${Math.floor(Math.random() * 9000 + 1000)}`,
-    employeeName: "Juan García",
+    employeeName: generateEmployeeName(),
     barcode: generateBarcode(timestamp),
   };
 };
