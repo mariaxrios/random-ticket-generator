@@ -129,16 +129,24 @@ const getEcoLabel = (): string => {
   return labels[Math.floor(Math.random() * labels.length)];
 };
 
-const generateProducts = (): Product[] => {
-  const numProducts = Math.floor(Math.random() * 6 + 30); // 30-35 productos
+const generateProducts = (totalItems: number = 30, ecoPercentage: number = 50): Product[] => {
+  const numProducts = Math.min(totalItems, PRODUCTS.length);
   const products: Product[] = [];
   const categories = [...new Set(PRODUCTS.map(p => p.category))];
-  const usedProducts = new Set<string>(); // Para evitar repeticiones
+  const usedProducts = new Set<string>();
+
+  const numEcoProducts = Math.round((numProducts * ecoPercentage) / 100);
+  let ecoCount = 0;
   
-  // Asegurarse de incluir productos de todas las categorías
   categories.forEach(category => {
+    if (products.length >= numProducts) return;
+    
     const categoryProducts = PRODUCTS.filter(p => p.category === category);
-    const numFromCategory = Math.floor(Math.random() * 3) + 1; // 1-3 productos por categoría
+    const remainingProducts = numProducts - products.length;
+    const numFromCategory = Math.min(
+      Math.floor(remainingProducts / (categories.length - categories.indexOf(category))),
+      categoryProducts.length
+    );
     
     const availableProducts = categoryProducts.filter(p => !usedProducts.has(p.name));
     const selectedProducts = availableProducts
@@ -147,32 +155,40 @@ const generateProducts = (): Product[] => {
     
     selectedProducts.forEach(product => {
       const quantity = getRandomQuantity(product.unit);
-      const isEco = Math.random() < 0.5; // 50% probabilidad de ser eco
-      usedProducts.add(product.name); // Marcar el producto como usado
+      const canBeEco = ecoCount < numEcoProducts;
+      const shouldBeEco = canBeEco && (ecoCount < numEcoProducts - (numProducts - products.length - 1));
+      const isEco = shouldBeEco || (canBeEco && Math.random() < 0.5);
+      
+      if (isEco) ecoCount++;
+      usedProducts.add(product.name);
       
       products.push({
         ...product,
         quantity,
-        discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0, // 20% probabilidad de descuento (5-20%)
+        discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
         isEco,
       });
     });
   });
 
-  // Añadir productos adicionales hasta alcanzar el mínimo
   while (products.length < numProducts) {
     const availableProducts = PRODUCTS.filter(p => !usedProducts.has(p.name));
-    if (availableProducts.length === 0) break; // Si no hay más productos disponibles
+    if (availableProducts.length === 0) break;
 
     const randomProduct = availableProducts[Math.floor(Math.random() * availableProducts.length)];
     const quantity = getRandomQuantity(randomProduct.unit);
+    const canBeEco = ecoCount < numEcoProducts;
+    const shouldBeEco = canBeEco && (ecoCount < numEcoProducts - (numProducts - products.length - 1));
+    const isEco = shouldBeEco || (canBeEco && Math.random() < 0.5);
+    
+    if (isEco) ecoCount++;
     usedProducts.add(randomProduct.name);
     
     products.push({
       ...randomProduct,
       quantity,
       discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
-      isEco: Math.random() < 0.5,
+      isEco,
     });
   }
 
@@ -187,29 +203,20 @@ const formatDate = (date: Date): string => {
 };
 
 const generateBarcode = (timestamp: Date): string => {
-  // 4 dígitos para el identificador del supermercado (4000-4999)
   const storeId = (4000 + Math.floor(Math.random() * 1000)).toString();
-  
-  // 8 dígitos para el número de ticket
   const ticketNum = Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
-  
-  // 6 dígitos para la fecha (DDMMYY)
   const date = formatDate(timestamp);
-  
-  // 4 dígitos para el checksum
   const checksum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-
-  // Formato: SSSS TTTTTTTT DDMMYY CCCC
   return `${storeId}${ticketNum}${date}${checksum}`;
 };
 
-export const generateTicket = (): Ticket => {
+export const generateTicket = (totalItems: number = 30, ecoPercentage: number = 50): Ticket => {
   const timestamp = new Date();
   const paymentMethods = ["cash", "card", "contactless", "bizum"] as const;
 
   return {
     store: generateStore(),
-    products: generateProducts(),
+    products: generateProducts(totalItems, ecoPercentage),
     timestamp,
     paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
     ticketNumber: Math.floor(Math.random() * 900000 + 100000).toString(),
