@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { generateTicket } from "../utils/ticketGenerator";
 import TicketPreview from "./TicketPreview";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,28 @@ const TicketGenerator = () => {
   const [email, setEmail] = useState("");
   const [totalItems, setTotalItems] = useState(30);
   const [ecoPercentage, setEcoPercentage] = useState(50);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+
+  useEffect(() => {
+    // Solicitar la ubicación del usuario cuando el componente se monta
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
+          toast.success("Ubicación obtenida correctamente");
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          toast.error("No se pudo obtener la ubicación. Usando ubicación por defecto (Madrid)");
+        }
+      );
+    } else {
+      toast.error("Geolocalización no disponible en este navegador");
+    }
+  }, []);
 
   const handleGenerate = () => {
     if (totalItems < 1 || totalItems > 100) {
@@ -45,6 +67,15 @@ const TicketGenerator = () => {
         <h1 className="text-4xl font-bold tracking-tight">Generador de Tickets</h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
           Generate realistic supermarket receipts with random products, prices, and store information.
+          {userLocation ? (
+            <span className="block text-sm text-green-600">
+              Usando ubicación actual: {userLocation.latitude.toFixed(4)}, {userLocation.longitude.toFixed(4)}
+            </span>
+          ) : (
+            <span className="block text-sm text-yellow-600">
+              Usando ubicación por defecto (Madrid)
+            </span>
+          )}
         </p>
       </div>
 

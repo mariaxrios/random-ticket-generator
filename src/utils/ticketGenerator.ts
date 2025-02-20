@@ -5,12 +5,16 @@ import { generateProducts } from "./generators/productGenerator";
 import { generateEmployeeName } from "./generators/employeeGenerator";
 import { generateBarcode } from "./generators/barcodeGenerator";
 
-export const generateTicket = (totalItems: number = 30, ecoPercentage: number = 50): Ticket => {
+export const generateTicket = (
+  totalItems: number = 30,
+  ecoPercentage: number = 50,
+  userLocation?: { latitude: number; longitude: number }
+): Ticket => {
   const timestamp = new Date();
   const paymentMethods = ["cash", "card", "contactless", "bizum"] as const;
 
   return {
-    store: generateStore(),
+    store: generateStore(userLocation),
     products: generateProducts(totalItems, ecoPercentage),
     timestamp,
     paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
