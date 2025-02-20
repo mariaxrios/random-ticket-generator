@@ -1,6 +1,6 @@
 
 import { Store } from "../../types/ticket";
-import { FICTIONAL_STORE_NAMES, REAL_STORE_NAMES } from "../constants/stores";
+import { FICTIONAL_STORE_NAMES, REAL_STORE_DATA } from "../constants/stores";
 import { computeDestinationPoint } from 'geolib';
 
 const CALLES = [
@@ -43,24 +43,44 @@ export const generateStore = (
   userLocation?: { latitude: number; longitude: number },
   useRealStores: boolean = false
 ): Store => {
-  const storeNames = useRealStores ? REAL_STORE_NAMES : FICTIONAL_STORE_NAMES;
-  const storeIndex = Math.floor(Math.random() * storeNames.length);
-  const storeName = storeNames[storeIndex];
-  const domain = storeName.toLowerCase().split(" ")[0];
+  if (useRealStores) {
+    // Usar datos reales de tiendas
+    const storeIndex = Math.floor(Math.random() * REAL_STORE_DATA.length);
+    const storeData = REAL_STORE_DATA[storeIndex];
 
-  const center = userLocation || defaultLocation;
-  const coordinates = generateRandomCoordinate(center, 20);
-  
-  const calle = CALLES[Math.floor(Math.random() * CALLES.length)];
-  const numero = Math.floor(Math.random() * 100) + 1;
-  const localidad = getLocalidadFromCoordinates(coordinates);
-  const address = `${calle}, ${numero} - ${localidad}`;
+    const center = userLocation || defaultLocation;
+    const coordinates = generateRandomCoordinate(center, 20);
+    const calle = CALLES[Math.floor(Math.random() * CALLES.length)];
+    const numero = Math.floor(Math.random() * 100) + 1;
+    const localidad = getLocalidadFromCoordinates(coordinates);
+    const address = `${calle}, ${numero} - ${localidad}`;
 
-  return {
-    name: storeName,
-    address,
-    nif: `B${Math.floor(Math.random() * 90000000 + 10000000)}`,
-    website: `www.${domain}.es`,
-    phone: `+34 ${Math.floor(Math.random() * 900000000 + 100000000)}`,
-  };
+    return {
+      name: storeData.name,
+      address,
+      nif: storeData.nif,
+      website: storeData.website,
+      phone: `+34 ${Math.floor(Math.random() * 900000000 + 100000000)}`,
+    };
+  } else {
+    // Generar datos ficticios
+    const storeIndex = Math.floor(Math.random() * FICTIONAL_STORE_NAMES.length);
+    const storeName = FICTIONAL_STORE_NAMES[storeIndex];
+    const domain = storeName.toLowerCase().split(" ")[0];
+
+    const center = userLocation || defaultLocation;
+    const coordinates = generateRandomCoordinate(center, 20);
+    const calle = CALLES[Math.floor(Math.random() * CALLES.length)];
+    const numero = Math.floor(Math.random() * 100) + 1;
+    const localidad = getLocalidadFromCoordinates(coordinates);
+    const address = `${calle}, ${numero} - ${localidad}`;
+
+    return {
+      name: storeName,
+      address,
+      nif: `B${Math.floor(Math.random() * 90000000 + 10000000)}`,
+      website: `www.${domain}.es`,
+      phone: `+34 ${Math.floor(Math.random() * 900000000 + 100000000)}`,
+    };
+  }
 };
