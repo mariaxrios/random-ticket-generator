@@ -8,13 +8,14 @@ import { generateBarcode } from "./generators/barcodeGenerator";
 export const generateTicket = (
   totalItems: number = 30,
   ecoPercentage: number = 50,
+  useRealStores: boolean = false,
   userLocation?: { latitude: number; longitude: number }
 ): Ticket => {
   const timestamp = new Date();
   const paymentMethods = ["cash", "card", "contactless", "bizum"] as const;
 
   return {
-    store: generateStore(userLocation),
+    store: generateStore(userLocation, useRealStores),
     products: generateProducts(totalItems, ecoPercentage),
     timestamp,
     paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],

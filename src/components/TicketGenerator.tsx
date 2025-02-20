@@ -1,9 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import { generateTicket } from "../utils/ticketGenerator";
 import TicketPreview from "./TicketPreview";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 const TicketGenerator = () => {
@@ -11,10 +12,10 @@ const TicketGenerator = () => {
   const [email, setEmail] = useState("");
   const [totalItems, setTotalItems] = useState(30);
   const [ecoPercentage, setEcoPercentage] = useState(50);
+  const [useRealStores, setUseRealStores] = useState(false);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
-    // Solicitar la ubicación del usuario cuando el componente se monta
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -43,11 +44,10 @@ const TicketGenerator = () => {
       toast.error("El porcentaje ecológico debe estar entre 0 y 100");
       return;
     }
-    setTicket(generateTicket(totalItems, ecoPercentage));
+    setTicket(generateTicket(totalItems, ecoPercentage, useRealStores, userLocation));
   };
 
   const handleDownload = () => {
-    // This is a placeholder for the download functionality
     toast.success("Ticket download started");
   };
 
@@ -57,7 +57,6 @@ const TicketGenerator = () => {
       toast.error("Please enter an email address");
       return;
     }
-    // This is a placeholder for the email sending functionality
     toast.success(`Ticket sent to ${email}`);
   };
 
@@ -107,6 +106,24 @@ const TicketGenerator = () => {
               onChange={(e) => setEcoPercentage(Number(e.target.value))}
             />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Tipo de tienda</Label>
+          <RadioGroup
+            defaultValue={useRealStores ? "real" : "fictional"}
+            onValueChange={(value) => setUseRealStores(value === "real")}
+            className="flex space-x-4"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="fictional" id="fictional" />
+              <Label htmlFor="fictional">Ficticias</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="real" id="real" />
+              <Label htmlFor="real">Reales</Label>
+            </div>
+          </RadioGroup>
         </div>
 
         <div className="flex justify-center gap-4 flex-wrap">

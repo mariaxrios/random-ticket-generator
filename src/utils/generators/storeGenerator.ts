@@ -1,6 +1,6 @@
 
 import { Store } from "../../types/ticket";
-import { STORE_NAMES } from "../constants/stores";
+import { FICTIONAL_STORE_NAMES, REAL_STORE_NAMES } from "../constants/stores";
 import { computeDestinationPoint } from 'geolib';
 
 const CALLES = [
@@ -32,8 +32,6 @@ const defaultLocation = {
 };
 
 const getLocalidadFromCoordinates = (coordinates: { latitude: number; longitude: number }): string => {
-  // Aquí podríamos integrar un servicio de geocodificación inversa
-  // Por ahora, usaremos Madrid como ejemplo
   if (coordinates.latitude > 40.5) return "Alcobendas";
   if (coordinates.latitude < 40.3) return "Getafe";
   if (coordinates.longitude < -3.8) return "Pozuelo";
@@ -41,16 +39,18 @@ const getLocalidadFromCoordinates = (coordinates: { latitude: number; longitude:
   return "Madrid";
 };
 
-export const generateStore = (userLocation?: { latitude: number; longitude: number }): Store => {
-  const storeIndex = Math.floor(Math.random() * STORE_NAMES.length);
-  const storeName = STORE_NAMES[storeIndex];
+export const generateStore = (
+  userLocation?: { latitude: number; longitude: number },
+  useRealStores: boolean = false
+): Store => {
+  const storeNames = useRealStores ? REAL_STORE_NAMES : FICTIONAL_STORE_NAMES;
+  const storeIndex = Math.floor(Math.random() * storeNames.length);
+  const storeName = storeNames[storeIndex];
   const domain = storeName.toLowerCase().split(" ")[0];
 
-  // Usar la ubicación del usuario o la ubicación por defecto
   const center = userLocation || defaultLocation;
   const coordinates = generateRandomCoordinate(center, 20);
   
-  // Generar una dirección con calle y número aleatorios
   const calle = CALLES[Math.floor(Math.random() * CALLES.length)];
   const numero = Math.floor(Math.random() * 100) + 1;
   const localidad = getLocalidadFromCoordinates(coordinates);
