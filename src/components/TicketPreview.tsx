@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Ticket, Product } from "../types/ticket";
 import Barcode from "react-barcode";
 
@@ -38,15 +38,30 @@ const getEcoLabel = (): string => {
   return labels[Math.floor(Math.random() * labels.length)];
 };
 
+const getRandomFont = (): string => {
+  const fonts = [
+    "font-mono",
+    "font-roboto-mono",
+    "font-space-mono",
+    "font-source-code-pro",
+    "font-ubuntu-mono",
+    "font-fira-mono"
+  ];
+  return fonts[Math.floor(Math.random() * fonts.length)];
+};
+
 const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const total = calculateTotal(ticket.products);
   const vat4 = calculateVAT(ticket.products, 4);
   const vat10 = calculateVAT(ticket.products, 10);
   const vat21 = calculateVAT(ticket.products, 21);
 
+  // Usa useMemo para mantener la misma fuente mientras no cambie el ticket
+  const randomFont = useMemo(() => getRandomFont(), [ticket]);
+
   return (
     <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden animate-fade-in">
-      <div className="p-6 font-mono text-sm space-y-4">
+      <div className={`p-6 text-sm space-y-4 ${randomFont}`}>
         {/* Store Header */}
         <div className="text-center border-b pb-4 space-y-1">
           <h2 className="font-bold text-lg">{ticket.store.name}</h2>

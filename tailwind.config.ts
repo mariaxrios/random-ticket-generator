@@ -62,6 +62,11 @@ export default {
       },
       fontFamily: {
         mono: ["JetBrains Mono", "monospace"],
+        'roboto-mono': ["Roboto Mono", "monospace"],
+        'space-mono': ["Space Mono", "monospace"],
+        'source-code-pro': ["Source Code Pro", "monospace"],
+        'ubuntu-mono': ["Ubuntu Mono", "monospace"],
+        'fira-mono': ["Fira Mono", "monospace"],
         sans: ["Inter var", "sans-serif"],
       },
       animation: {
