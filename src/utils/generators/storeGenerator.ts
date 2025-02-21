@@ -1,14 +1,7 @@
 
 import { Store } from "../../types/ticket";
-import { FICTIONAL_STORE_NAMES, REAL_STORE_DATA } from "../constants/stores";
+import { FICTIONAL_STORE_NAMES, REAL_STORE_DATA, REGIONS, DEFAULT_REGION } from "../constants/stores";
 import { computeDestinationPoint } from 'geolib';
-
-const CALLES = [
-  "Calle Mayor", "Avenida Principal", "Plaza del Sol", "Calle Real",
-  "Gran Vía", "Paseo de la Castellana", "Calle del Carmen", "Avenida de la Constitución",
-  "Calle San Francisco", "Plaza España", "Calle Nueva", "Avenida de la Paz",
-  "Calle Victoria", "Paseo Marítimo", "Calle del Mar", "Avenida de los Pinos"
-];
 
 const generateRandomCoordinate = (center: { latitude: number; longitude: number }, radiusInKm: number) => {
   const angle = Math.random() * 360;
@@ -31,29 +24,36 @@ const defaultLocation = {
   longitude: -3.7038
 };
 
-const getLocalidadFromCoordinates = (coordinates: { latitude: number; longitude: number }): string => {
-  if (coordinates.latitude > 40.5) return "Alcobendas";
-  if (coordinates.latitude < 40.3) return "Getafe";
-  if (coordinates.longitude < -3.8) return "Pozuelo";
-  if (coordinates.longitude > -3.6) return "Coslada";
-  return "Madrid";
+const getRegionFromCoordinates = (coordinates: { latitude: number; longitude: number }) => {
+  return REGIONS.find(region => {
+    const { bounds } = region;
+    return (
+      coordinates.latitude >= bounds.minLat &&
+      coordinates.latitude <= bounds.maxLat &&
+      coordinates.longitude >= bounds.minLng &&
+      coordinates.longitude <= bounds.maxLng
+    );
+  }) || DEFAULT_REGION;
 };
 
 export const generateStore = (
   userLocation?: { latitude: number; longitude: number },
   useRealStores: boolean = false
 ): Store => {
+  const center = userLocation || defaultLocation;
+  const coordinates = generateRandomCoordinate(center, 20);
+  const region = getRegionFromCoordinates(coordinates);
+  
+  // Seleccionar municipio y calle aleatorios de la región
+  const municipality = region.municipalities[Math.floor(Math.random() * region.municipalities.length)];
+  const street = region.streets[Math.floor(Math.random() * region.streets.length)];
+  const numero = Math.floor(Math.random() * 100) + 1;
+  const address = `${street}, ${numero} - ${municipality}`;
+
   if (useRealStores) {
     // Usar datos reales de tiendas
     const storeIndex = Math.floor(Math.random() * REAL_STORE_DATA.length);
     const storeData = REAL_STORE_DATA[storeIndex];
-
-    const center = userLocation || defaultLocation;
-    const coordinates = generateRandomCoordinate(center, 20);
-    const calle = CALLES[Math.floor(Math.random() * CALLES.length)];
-    const numero = Math.floor(Math.random() * 100) + 1;
-    const localidad = getLocalidadFromCoordinates(coordinates);
-    const address = `${calle}, ${numero} - ${localidad}`;
 
     return {
       name: storeData.name,
@@ -67,13 +67,6 @@ export const generateStore = (
     const storeIndex = Math.floor(Math.random() * FICTIONAL_STORE_NAMES.length);
     const storeName = FICTIONAL_STORE_NAMES[storeIndex];
     const domain = storeName.toLowerCase().split(" ")[0];
-
-    const center = userLocation || defaultLocation;
-    const coordinates = generateRandomCoordinate(center, 20);
-    const calle = CALLES[Math.floor(Math.random() * CALLES.length)];
-    const numero = Math.floor(Math.random() * 100) + 1;
-    const localidad = getLocalidadFromCoordinates(coordinates);
-    const address = `${calle}, ${numero} - ${localidad}`;
 
     return {
       name: storeName,
