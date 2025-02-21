@@ -19,23 +19,32 @@ const getRandomQuantity = (unit: string): number => {
   }
 };
 
-export const generateProducts = (totalItems: number = 30, ecoPercentage: number = 50): Product[] => {
+const getEcoLabel = (): string => {
+  const labels = ["ECO", "BIO"];
+  return labels[Math.floor(Math.random() * labels.length)];
+};
+
+export const generateProducts = (
+  totalItems: number = 30, 
+  producePercentage: number = 50,
+  ecoPercentage: number = 50
+): Product[] => {
   const numProducts = Math.min(totalItems, PRODUCTS.length);
   const products: Product[] = [];
   const categories = [...new Set(PRODUCTS.map(p => p.category))];
   const usedProducts = new Set<string>();
 
   const numEcoProducts = Math.round((numProducts * ecoPercentage) / 100);
+  const numProduceProducts = Math.round((numProducts * producePercentage) / 100);
   let ecoCount = 0;
   
   // Primero, aseguramos el porcentaje de frutas y verduras
   const fruitsAndVeggies = PRODUCTS.filter(p => p.category === "Frutas" || p.category === "Verduras");
-  const numFruitsAndVeggies = Math.round((numProducts * ecoPercentage) / 100);
   
   // Seleccionar frutas y verduras aleatorias
   const selectedFruitsAndVeggies = fruitsAndVeggies
     .sort(() => Math.random() - 0.5)
-    .slice(0, numFruitsAndVeggies);
+    .slice(0, numProduceProducts);
   
   // Añadir frutas y verduras seleccionadas
   selectedFruitsAndVeggies.forEach(product => {
@@ -53,13 +62,16 @@ export const generateProducts = (totalItems: number = 30, ecoPercentage: number 
   });
   
   // Luego, llenar el resto de productos
+  const remainingEcoProducts = numEcoProducts - ecoCount;
+  const remainingProducts = numProducts - products.length;
+  let nonProduceEcoCount = 0;
+  
   categories.forEach(category => {
     if (products.length >= numProducts) return;
     if (category === "Frutas" || category === "Verduras") return; // Ya procesados
     
     const categoryProducts = PRODUCTS.filter(p => p.category === category);
-    const remainingProducts = numProducts - products.length;
-    const numFromCategory = Math.min(
+    const availableSlots = Math.min(
       Math.floor(remainingProducts / (categories.length - categories.indexOf(category))),
       categoryProducts.length
     );
@@ -67,14 +79,13 @@ export const generateProducts = (totalItems: number = 30, ecoPercentage: number 
     const availableProducts = categoryProducts.filter(p => !usedProducts.has(p.name));
     const selectedProducts = availableProducts
       .sort(() => Math.random() - 0.5)
-      .slice(0, numFromCategory);
+      .slice(0, availableSlots);
     
     selectedProducts.forEach(product => {
       const quantity = getRandomQuantity(product.unit);
-      const canBeEco = ecoCount < numEcoProducts;
-      const shouldBeEco = canBeEco && (ecoCount < numEcoProducts - (numProducts - products.length - 1));
+      const shouldBeEco = nonProduceEcoCount < remainingEcoProducts;
       
-      if (shouldBeEco) ecoCount++;
+      if (shouldBeEco) nonProduceEcoCount++;
       usedProducts.add(product.name);
       
       products.push({
@@ -93,10 +104,9 @@ export const generateProducts = (totalItems: number = 30, ecoPercentage: number 
 
     const randomProduct = availableProducts[Math.floor(Math.random() * availableProducts.length)];
     const quantity = getRandomQuantity(randomProduct.unit);
-    const canBeEco = ecoCount < numEcoProducts;
-    const shouldBeEco = canBeEco && (ecoCount < numEcoProducts - (numProducts - products.length - 1));
+    const shouldBeEco = nonProduceEcoCount < remainingEcoProducts;
     
-    if (shouldBeEco) ecoCount++;
+    if (shouldBeEco) nonProduceEcoCount++;
     usedProducts.add(randomProduct.name);
     
     products.push({

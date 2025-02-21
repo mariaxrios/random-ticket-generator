@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { generateTicket } from "../utils/ticketGenerator";
 import TicketPreview from "./TicketPreview";
@@ -11,6 +12,7 @@ const TicketGenerator = () => {
   const [ticket, setTicket] = useState(generateTicket());
   const [email, setEmail] = useState("");
   const [totalItems, setTotalItems] = useState(30);
+  const [producePercentage, setProducePercentage] = useState(50);
   const [ecoPercentage, setEcoPercentage] = useState(50);
   const [useRealStores, setUseRealStores] = useState(false);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -40,11 +42,15 @@ const TicketGenerator = () => {
       toast.error("El número de artículos debe estar entre 1 y 100");
       return;
     }
-    if (ecoPercentage < 0 || ecoPercentage > 100) {
-      toast.error("El porcentaje ecológico debe estar entre 0 y 100");
+    if (producePercentage < 0 || producePercentage > 100) {
+      toast.error("El porcentaje de frutas y verduras debe estar entre 0 y 100");
       return;
     }
-    setTicket(generateTicket(totalItems, ecoPercentage, useRealStores, userLocation));
+    if (ecoPercentage < 0 || ecoPercentage > 100) {
+      toast.error("El porcentaje de etiquetas eco/bio debe estar entre 0 y 100");
+      return;
+    }
+    setTicket(generateTicket(totalItems, producePercentage, ecoPercentage, useRealStores, userLocation));
   };
 
   const handleDownload = () => {
@@ -79,7 +85,7 @@ const TicketGenerator = () => {
       </div>
 
       <div className="max-w-md mx-auto space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <div>
             <label htmlFor="totalItems" className="block text-sm font-medium text-gray-700 mb-1">
               Número de artículos
@@ -94,8 +100,21 @@ const TicketGenerator = () => {
             />
           </div>
           <div>
+            <label htmlFor="producePercentage" className="block text-sm font-medium text-gray-700 mb-1">
+              % Frutas y verduras
+            </label>
+            <Input
+              id="producePercentage"
+              type="number"
+              min="0"
+              max="100"
+              value={producePercentage}
+              onChange={(e) => setProducePercentage(Number(e.target.value))}
+            />
+          </div>
+          <div>
             <label htmlFor="ecoPercentage" className="block text-sm font-medium text-gray-700 mb-1">
-              % Productos ecológicos
+              % Etiquetas ECO/BIO
             </label>
             <Input
               id="ecoPercentage"

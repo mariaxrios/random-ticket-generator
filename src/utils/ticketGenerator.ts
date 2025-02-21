@@ -30,6 +30,7 @@ const generateValidTimestamp = (): Date => {
 
 export const generateTicket = (
   totalItems: number = 30,
+  producePercentage: number = 50,
   ecoPercentage: number = 50,
   useRealStores: boolean = false,
   userLocation?: { latitude: number; longitude: number }
@@ -39,7 +40,7 @@ export const generateTicket = (
 
   return {
     store: generateStore(userLocation, useRealStores),
-    products: generateProducts(totalItems, ecoPercentage),
+    products: generateProducts(totalItems, producePercentage, ecoPercentage),
     timestamp,
     paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
     ticketNumber: Math.floor(Math.random() * 900000 + 100000).toString(),
