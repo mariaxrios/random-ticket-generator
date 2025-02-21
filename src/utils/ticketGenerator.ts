@@ -10,7 +10,7 @@ const generateValidTimestamp = (): Date => {
   const result = new Date(now);
 
   // Generar una fecha aleatoria dentro de los últimos 5 días
-  const daysAgo = Math.floor(Math.random() * 5);
+  const daysAgo = Math.floor(Math.random() * 5) + 1; // Sumamos 1 para excluir el día actual
   result.setDate(result.getDate() - daysAgo);
 
   // Generar una hora aleatoria entre 9:00 y 21:30

@@ -28,8 +28,34 @@ export const generateProducts = (totalItems: number = 30, ecoPercentage: number 
   const numEcoProducts = Math.round((numProducts * ecoPercentage) / 100);
   let ecoCount = 0;
   
+  // Primero, aseguramos el porcentaje de frutas y verduras
+  const fruitsAndVeggies = PRODUCTS.filter(p => p.category === "Frutas" || p.category === "Verduras");
+  const numFruitsAndVeggies = Math.round((numProducts * ecoPercentage) / 100);
+  
+  // Seleccionar frutas y verduras aleatorias
+  const selectedFruitsAndVeggies = fruitsAndVeggies
+    .sort(() => Math.random() - 0.5)
+    .slice(0, numFruitsAndVeggies);
+  
+  // Añadir frutas y verduras seleccionadas
+  selectedFruitsAndVeggies.forEach(product => {
+    const quantity = getRandomQuantity(product.unit);
+    const shouldBeEco = ecoCount < numEcoProducts;
+    if (shouldBeEco) ecoCount++;
+    
+    usedProducts.add(product.name);
+    products.push({
+      ...product,
+      quantity,
+      discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
+      isEco: shouldBeEco,
+    });
+  });
+  
+  // Luego, llenar el resto de productos
   categories.forEach(category => {
     if (products.length >= numProducts) return;
+    if (category === "Frutas" || category === "Verduras") return; // Ya procesados
     
     const categoryProducts = PRODUCTS.filter(p => p.category === category);
     const remainingProducts = numProducts - products.length;
@@ -47,20 +73,20 @@ export const generateProducts = (totalItems: number = 30, ecoPercentage: number 
       const quantity = getRandomQuantity(product.unit);
       const canBeEco = ecoCount < numEcoProducts;
       const shouldBeEco = canBeEco && (ecoCount < numEcoProducts - (numProducts - products.length - 1));
-      const isEco = shouldBeEco || (canBeEco && Math.random() < 0.5);
       
-      if (isEco) ecoCount++;
+      if (shouldBeEco) ecoCount++;
       usedProducts.add(product.name);
       
       products.push({
         ...product,
         quantity,
         discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
-        isEco,
+        isEco: shouldBeEco,
       });
     });
   });
 
+  // Llenar los productos restantes si es necesario
   while (products.length < numProducts) {
     const availableProducts = PRODUCTS.filter(p => !usedProducts.has(p.name));
     if (availableProducts.length === 0) break;
@@ -69,16 +95,15 @@ export const generateProducts = (totalItems: number = 30, ecoPercentage: number 
     const quantity = getRandomQuantity(randomProduct.unit);
     const canBeEco = ecoCount < numEcoProducts;
     const shouldBeEco = canBeEco && (ecoCount < numEcoProducts - (numProducts - products.length - 1));
-    const isEco = shouldBeEco || (canBeEco && Math.random() < 0.5);
     
-    if (isEco) ecoCount++;
+    if (shouldBeEco) ecoCount++;
     usedProducts.add(randomProduct.name);
     
     products.push({
       ...randomProduct,
       quantity,
       discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
-      isEco,
+      isEco: shouldBeEco,
     });
   }
 
