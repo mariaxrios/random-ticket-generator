@@ -9,11 +9,11 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 const TicketGenerator = () => {
-  const [ticket, setTicket] = useState(generateTicket());
+  const [ticket, setTicket] = useState(generateTicket(20, 30, 10)); // Valores por defecto actualizados
   const [email, setEmail] = useState("");
-  const [totalItems, setTotalItems] = useState(30);
-  const [producePercentage, setProducePercentage] = useState(50);
-  const [ecoPercentage, setEcoPercentage] = useState(50);
+  const [totalItems, setTotalItems] = useState(20); // Cambiado a 20
+  const [producePercentage, setProducePercentage] = useState(30); // Cambiado a 30
+  const [ecoPercentage, setEcoPercentage] = useState(10); // Cambiado a 10
   const [useRealStores, setUseRealStores] = useState(false);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 

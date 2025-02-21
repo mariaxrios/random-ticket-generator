@@ -29,9 +29,9 @@ const generateValidTimestamp = (): Date => {
 };
 
 export const generateTicket = (
-  totalItems: number = 30,
-  producePercentage: number = 50,
-  ecoPercentage: number = 50,
+  totalItems: number = 20, // Cambiado a 20
+  producePercentage: number = 30, // Cambiado a 30
+  ecoPercentage: number = 10, // Cambiado a 10
   useRealStores: boolean = false,
   userLocation?: { latitude: number; longitude: number }
 ): Ticket => {
