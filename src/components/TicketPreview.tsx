@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Ticket, Product } from "../types/ticket";
 import Barcode from "react-barcode";
@@ -67,6 +66,30 @@ const getBarcodePosition = (): number => {
   return Math.floor(Math.random() * 4); // 0-3 posiciones posibles
 };
 
+const getPromoMessage = (): string => {
+  const messages = [
+    "¡2x1 en productos de limpieza!",
+    "Descuento del 20% en la próxima compra",
+    "3x2 en productos frescos",
+    "¡Regalo sorpresa en tu próxima visita!",
+    "¡50% en la segunda unidad!",
+    "Ofertas especiales para clientes fidelizados"
+  ];
+  return messages[Math.floor(Math.random() * messages.length)];
+};
+
+const calculateBagsSaved = (products: Product[]): number => {
+  return Math.floor(products.length / 3); // Estimación aproximada
+};
+
+const calculateCarbonFootprint = (products: Product[]): number => {
+  return Number((products.length * 0.12).toFixed(2)); // kg CO2 estimados
+};
+
+const calculateLoyaltyPoints = (total: number): number => {
+  return Math.floor(total * 10); // 10 puntos por euro
+};
+
 const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const total = calculateTotal(ticket.products);
   const vat4 = calculateVAT(ticket.products, 4);
@@ -75,6 +98,16 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const randomFont = useMemo(() => getRandomFont(), [ticket]);
   const barcodePosition = useMemo(() => getBarcodePosition(), [ticket]);
   const ecoMessage = useMemo(() => getEcoMessage(), [ticket]);
+  const promoMessage = useMemo(() => getPromoMessage(), [ticket]);
+  const bagsSaved = useMemo(() => calculateBagsSaved(ticket.products), [ticket.products]);
+  const carbonFootprint = useMemo(() => calculateCarbonFootprint(ticket.products), [ticket.products]);
+  const loyaltyPoints = useMemo(() => calculateLoyaltyPoints(total), [total]);
+  
+  const totalDiscount = ticket.products.reduce((acc, product) => {
+    const price = product.price * product.quantity;
+    const discount = price * (product.discount || 0) / 100;
+    return acc + discount;
+  }, 0);
 
   const BarcodeComponent = () => (
     <div className="flex justify-center">
@@ -150,6 +183,26 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           ))}
         </div>
 
+        {/* Savings and Loyalty Section */}
+        {totalDiscount > 0 && (
+          <div className="text-xs text-red-500 font-bold">
+            AHORRO TOTAL: {formatCurrency(totalDiscount)}
+          </div>
+        )}
+        
+        <div className="text-xs space-y-1 border-t pt-2">
+          <p className="text-blue-600">Puntos acumulados: {loyaltyPoints}</p>
+          <p className="text-green-600">Has ahorrado {bagsSaved} bolsas de plástico</p>
+          <p className="text-gray-600">Huella de carbono: {carbonFootprint}kg CO2</p>
+        </div>
+
+        {/* Promotional Message */}
+        <div className="text-xs font-bold text-orange-600 text-center border-t pt-2">
+          {promoMessage}
+        </div>
+
+        {barcodePosition === 2 && <BarcodeComponent />}
+
         {/* Totals */}
         <div className="border-t pt-2 space-y-1">
           <div className="text-xs space-y-0.5">
@@ -174,8 +227,6 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
             <p>Forma de pago: {ticket.paymentMethod.toUpperCase()}</p>
           </div>
         </div>
-
-        {barcodePosition === 2 && <BarcodeComponent />}
 
         {/* Footer */}
         <div className="text-center text-xs space-y-1 border-t pt-2">
