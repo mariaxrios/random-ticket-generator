@@ -6,10 +6,10 @@ const formatDate = (date: Date): string => {
   return `${day}${month}${year}`;
 };
 
-export const generateBarcode = (timestamp: Date): string => {
-  const storeId = (4000 + Math.floor(Math.random() * 1000)).toString();
-  const ticketNum = Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
+export const generateBarcode = (ticketNumber: string, timestamp: Date, storeId: string): string => {
+  // Usamos los últimos 4 dígitos del ticket + fecha + ID tienda
+  const ticketPart = ticketNumber.slice(-4);
   const date = formatDate(timestamp);
-  const checksum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-  return `${storeId}${ticketNum}${date}${checksum}`;
+  const storePart = storeId.slice(-4);
+  return `${ticketPart}${date}${storePart}`;
 };

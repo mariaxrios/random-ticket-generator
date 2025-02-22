@@ -34,7 +34,7 @@ const calculateVAT = (products: Product[], vatRate: number) => {
 };
 
 const getEcoLabel = (): string => {
-  const labels = ["ECO", "BIO", "Ecológico", "Natural"];
+  const labels = ["ECO", "BIO", "Ecológico", "Natural", "Orgánico"];
   return labels[Math.floor(Math.random() * labels.length)];
 };
 
@@ -50,28 +50,60 @@ const getRandomFont = (): string => {
   return fonts[Math.floor(Math.random() * fonts.length)];
 };
 
+const getEcoMessage = (): string => {
+  const messages = [
+    "Juntos cuidamos el planeta",
+    "Por un futuro más verde",
+    "Comprometidos con el medio ambiente",
+    "Reducir, Reutilizar, Reciclar",
+    "Tu elección sostenible",
+    "Cuidando nuestro entorno",
+    "Eco-responsables contigo"
+  ];
+  return messages[Math.floor(Math.random() * messages.length)];
+};
+
+const getBarcodePosition = (): number => {
+  return Math.floor(Math.random() * 4); // 0-3 posiciones posibles
+};
+
 const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const total = calculateTotal(ticket.products);
   const vat4 = calculateVAT(ticket.products, 4);
   const vat10 = calculateVAT(ticket.products, 10);
   const vat21 = calculateVAT(ticket.products, 21);
-
-  // Usa useMemo para mantener la misma fuente mientras no cambie el ticket
   const randomFont = useMemo(() => getRandomFont(), [ticket]);
+  const barcodePosition = useMemo(() => getBarcodePosition(), [ticket]);
+  const ecoMessage = useMemo(() => getEcoMessage(), [ticket]);
+
+  const BarcodeComponent = () => (
+    <div className="flex justify-center">
+      <Barcode 
+        value={ticket.barcode}
+        width={1.2}
+        height={40}
+        fontSize={10}
+        margin={0}
+        displayValue={true}
+      />
+    </div>
+  );
 
   return (
     <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden animate-fade-in">
-      <div className={`p-6 text-sm space-y-4 ${randomFont}`}>
+      <div className={`p-4 text-sm space-y-2 ${randomFont}`}>
         {/* Store Header */}
-        <div className="text-center border-b pb-4 space-y-1">
-          <h2 className="font-bold text-lg">{ticket.store.name}</h2>
-          <p>{ticket.store.address}</p>
-          <p>NIF: {ticket.store.nif}</p>
-          <p>{ticket.store.website}</p>
+        <div className="text-center space-y-0.5 border-b pb-2">
+          <h2 className="font-bold text-base">{ticket.store.name}</h2>
+          <p className="text-xs">{ticket.store.address}</p>
+          <p className="text-xs">NIF: {ticket.store.nif}</p>
+          <p className="text-xs">{ticket.store.website}</p>
         </div>
 
+        {barcodePosition === 0 && <BarcodeComponent />}
+
         {/* Ticket Info */}
-        <div className="text-xs grid grid-cols-2 gap-1">
+        <div className="text-xs grid grid-cols-2 gap-0.5">
           <p>Ticket: {ticket.ticketNumber}</p>
           <p>Fecha: {ticket.timestamp.toLocaleDateString("es-ES")}</p>
           <p>Caja: {ticket.cashierNumber}</p>
@@ -80,15 +112,16 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           <p>Nombre: {ticket.employeeName}</p>
         </div>
 
+        {barcodePosition === 1 && <BarcodeComponent />}
+
         {/* Products */}
-        <div className="space-y-3 border-t pt-3">
+        <div className="space-y-1 border-t pt-2">
           {ticket.products.map((product, index) => (
-            <div key={index} className="flex justify-between text-xs">
+            <div key={index} className="flex justify-between text-xs leading-tight">
               <div className="flex-1">
-                <span className="font-semibold">{product.name}</span>
-                {product.isEco && (
-                  <span className="text-gray-600 ml-1 text-[10px]">({getEcoLabel()})</span>
-                )}
+                <span className="font-semibold">
+                  {product.name} {product.isEco && getEcoLabel()}
+                </span>
                 <br />
                 <span className="text-gray-600">
                   {product.quantity} {product.unit} x {formatCurrency(product.price)}
@@ -116,8 +149,8 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         </div>
 
         {/* Totals */}
-        <div className="border-t pt-4 space-y-2">
-          <div className="text-xs space-y-1">
+        <div className="border-t pt-2 space-y-1">
+          <div className="text-xs space-y-0.5">
             <p className="flex justify-between">
               <span>IVA 4%:</span>
               <span>{formatCurrency(vat4)}</span>
@@ -131,7 +164,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
               <span>{formatCurrency(vat21)}</span>
             </p>
           </div>
-          <div className="text-lg font-bold flex justify-between border-t pt-2">
+          <div className="text-base font-bold flex justify-between border-t pt-1">
             <span>TOTAL</span>
             <span>{formatCurrency(total)}</span>
           </div>
@@ -140,26 +173,19 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           </div>
         </div>
 
+        {barcodePosition === 2 && <BarcodeComponent />}
+
         {/* Footer */}
-        <div className="text-center text-xs space-y-2 border-t pt-4">
-          <p className="font-semibold">Gracias por su compra en {ticket.store.name}</p>
-          <p>Juntos cuidamos el planeta.</p>
-          <p className="text-gray-600">Política de devoluciones: 30 días con ticket y embalaje original</p>
-          <p className="text-gray-600">Lunes a sábado de 9:00 a 21:30</p>
-          <p className="text-gray-600">
-            {ticket.store.phone} | {ticket.store.website}
-          </p>
-          <div className="mt-4 flex justify-center">
-            <Barcode 
-              value={ticket.barcode}
-              width={1.5}
-              height={50}
-              fontSize={12}
-              margin={0}
-              displayValue={true}
-            />
-          </div>
+        <div className="text-center text-xs space-y-1 border-t pt-2">
+          <p className="font-semibold">Gracias por su compra</p>
+          <p className="text-green-600">{ecoMessage}</p>
+          <p className="text-[10px] text-gray-600">Devoluciones: 30 días con ticket</p>
+          <p className="text-[10px] text-gray-600">L-S 9:00-21:30</p>
+          <p className="text-[10px] text-gray-600">{ticket.store.phone}</p>
+          <p className="text-[10px] text-gray-600">{ticket.store.website}</p>
         </div>
+
+        {barcodePosition === 3 && <BarcodeComponent />}
       </div>
     </div>
   );
