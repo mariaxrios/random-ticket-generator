@@ -84,7 +84,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         height={40}
         fontSize={10}
         margin={0}
-        displayValue={true}
+        displayValue={false}
       />
     </div>
   );
