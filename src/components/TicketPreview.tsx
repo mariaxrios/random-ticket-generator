@@ -97,6 +97,8 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           <h2 className="font-bold text-base">{ticket.store.name}</h2>
           <p className="text-xs">{ticket.store.address}</p>
           <p className="text-xs">NIF: {ticket.store.nif}</p>
+          <p className="text-xs">Tienda: {ticket.store.storeNumber}</p>
+          <p className="text-xs">CP: {ticket.store.postalCode}</p>
           <p className="text-xs">{ticket.store.website}</p>
         </div>
 
