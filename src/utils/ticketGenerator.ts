@@ -39,7 +39,6 @@ export const generateTicket = (
   const paymentMethods = ["cash", "card", "contactless", "bizum"] as const;
   const ticketNumber = Math.floor(Math.random() * 900000 + 100000).toString();
   const store = generateStore(userLocation, useRealStores);
-  const storeId = store.nif.replace(/[^0-9]/g, '').slice(-4);
 
   return {
     store,
@@ -50,6 +49,6 @@ export const generateTicket = (
     cashierNumber: Math.floor(Math.random() * 20) + 1,
     employeeId: `E${Math.floor(Math.random() * 9000 + 1000)}`,
     employeeName: generateEmployeeName(),
-    barcode: generateBarcode(ticketNumber, timestamp, storeId),
+    barcode: generateBarcode(ticketNumber, timestamp, store.storeNumber, store.postalCode),
   };
 };

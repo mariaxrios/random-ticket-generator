@@ -16,6 +16,8 @@ export interface Store {
   nif: string;
   website: string;
   phone: string;
+  postalCode: string;
+  storeNumber: string;
 }
 
 export interface Ticket {

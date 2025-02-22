@@ -49,6 +49,14 @@ export const generateStore = (
   const street = region.streets[Math.floor(Math.random() * region.streets.length)];
   const numero = Math.floor(Math.random() * 100) + 1;
   const address = `${street}, ${numero} - ${municipality}`;
+  
+  // Generar código postal (28001-28055 para Madrid, por ejemplo)
+  const postalCode = region.name === "Madrid" 
+    ? `280${Math.floor(Math.random() * 55).toString().padStart(2, '0')}`
+    : `${Math.floor(Math.random() * 90000 + 10000)}`;
+
+  // Generar número de tienda (4 dígitos)
+  const storeNumber = Math.floor(Math.random() * 9000 + 1000).toString();
 
   if (useRealStores) {
     // Usar datos reales de tiendas
@@ -61,6 +69,8 @@ export const generateStore = (
       nif: storeData.nif,
       website: storeData.website,
       phone: `+34 ${Math.floor(Math.random() * 900000000 + 100000000)}`,
+      postalCode,
+      storeNumber,
     };
   } else {
     // Generar datos ficticios
@@ -74,6 +84,8 @@ export const generateStore = (
       nif: `B${Math.floor(Math.random() * 90000000 + 10000000)}`,
       website: `www.${domain}.es`,
       phone: `+34 ${Math.floor(Math.random() * 900000000 + 100000000)}`,
+      postalCode,
+      storeNumber,
     };
   }
 };
