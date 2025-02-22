@@ -29,24 +29,27 @@ const generateValidTimestamp = (): Date => {
 };
 
 export const generateTicket = (
-  totalItems: number = 20, // Cambiado a 20
-  producePercentage: number = 30, // Cambiado a 30
-  ecoPercentage: number = 10, // Cambiado a 10
+  totalItems: number = 20,
+  producePercentage: number = 30,
+  ecoPercentage: number = 10,
   useRealStores: boolean = false,
   userLocation?: { latitude: number; longitude: number }
 ): Ticket => {
   const timestamp = generateValidTimestamp();
   const paymentMethods = ["cash", "card", "contactless", "bizum"] as const;
+  const ticketNumber = Math.floor(Math.random() * 900000 + 100000).toString();
+  const store = generateStore(userLocation, useRealStores);
+  const storeId = store.nif.replace(/[^0-9]/g, '').slice(-4);
 
   return {
-    store: generateStore(userLocation, useRealStores),
+    store,
     products: generateProducts(totalItems, producePercentage, ecoPercentage),
     timestamp,
     paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
-    ticketNumber: Math.floor(Math.random() * 900000 + 100000).toString(),
+    ticketNumber,
     cashierNumber: Math.floor(Math.random() * 20) + 1,
     employeeId: `E${Math.floor(Math.random() * 9000 + 1000)}`,
     employeeName: generateEmployeeName(),
-    barcode: generateBarcode(timestamp),
+    barcode: generateBarcode(ticketNumber, timestamp, storeId),
   };
 };
