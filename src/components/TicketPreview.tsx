@@ -90,6 +90,50 @@ const calculateLoyaltyPoints = (total: number): number => {
   return Math.floor(total * 10); // 10 puntos por euro
 };
 
+const formatTransactionId = (): string => {
+  return `TXN-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
+};
+
+const formatInvoiceNumber = (): string => {
+  const block1 = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  const block2 = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  const block3 = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+  return `${block1}-${block2}-${block3}`;
+};
+
+const formatCardNumber = (number: string): string => {
+  return `**** **** **** ${number.slice(-4)}`;
+};
+
+const generateAuthCodes = () => {
+  return {
+    nc: Math.floor(Math.random() * 1000000000).toString().padStart(9, '0'),
+    aut: Math.floor(Math.random() * 1000000).toString().padStart(6, '0'),
+    aid: `A${Math.floor(Math.random() * 10000000000000).toString().padStart(13, '0')}`,
+    arc: Math.floor(Math.random() * 100).toString().padStart(2, '0'),
+  };
+};
+
+const formatBarcodeNumber = (invoiceNumber: string, timestamp: Date): string => {
+  const prefix = "221";
+  const invoiceFirst4 = invoiceNumber.split('-')[0];
+  const date = timestamp.toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  }).replace(/\//g, '');
+  const invoiceBlock2 = invoiceNumber.split('-')[1];
+  const invoiceBlock3 = invoiceNumber.split('-')[2];
+  const padding = "00000000000";
+  const random = Math.floor(Math.random() * 10);
+  
+  return `${prefix}${invoiceFirst4}${date}${invoiceBlock2}${invoiceBlock3}${padding}${random}`;
+};
+
+const calculateLoyaltyPoints = (total: number): number => {
+  return Math.floor(total * 10); // 10 puntos por euro
+};
+
 const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const total = calculateTotal(ticket.products);
   const vat4 = calculateVAT(ticket.products, 4);
@@ -122,6 +166,11 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
     </div>
   );
 
+  const transactionId = useMemo(() => formatTransactionId(), [ticket]);
+  const invoiceNumber = useMemo(() => formatInvoiceNumber(), [ticket]);
+  const barcodeNumber = useMemo(() => formatBarcodeNumber(invoiceNumber, ticket.timestamp), [invoiceNumber, ticket.timestamp]);
+  const authCodes = useMemo(() => generateAuthCodes(), [ticket]);
+  
   return (
     <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden animate-fade-in">
       <div className={`p-4 text-sm space-y-2 ${randomFont}`}>
@@ -139,12 +188,13 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
 
         {/* Ticket Info */}
         <div className="text-xs grid grid-cols-2 gap-0.5">
-          <p>Ticket: {ticket.ticketNumber}</p>
+          <p>Factura: {invoiceNumber}</p>
           <p>Fecha: {ticket.timestamp.toLocaleDateString("es-ES")}</p>
           <p>Caja: {ticket.cashierNumber}</p>
           <p>Hora: {ticket.timestamp.toLocaleTimeString("es-ES")}</p>
           <p>Empleado: {ticket.employeeId}</p>
           <p>Nombre: {ticket.employeeName}</p>
+          <p>Ref: {transactionId}</p>
         </div>
 
         {barcodePosition === 1 && <BarcodeComponent />}
@@ -160,6 +210,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
                 <br />
                 <span className="text-gray-600">
                   {product.quantity} {product.unit} x {formatCurrency(product.price)}
+                  {product.unit === 'kg' && ` (${formatCurrency(product.price * product.quantity)} / kg)`}
                 </span>
               </div>
               <div className="text-right">
@@ -228,6 +279,19 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           </div>
         </div>
 
+        {/* Payment Details */}
+        {ticket.paymentMethod === "card" && (
+          <div className="text-xs space-y-1 border-t pt-2">
+            <p>Tarjeta: {formatCardNumber("4532016798321456")}</p>
+            <div className="grid grid-cols-2 gap-x-4">
+              <p>NC: {authCodes.nc}</p>
+              <p>AUT: {authCodes.aut}</p>
+              <p>AID: {authCodes.aid}</p>
+              <p>ARC: {authCodes.arc}</p>
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="text-center text-xs space-y-1 border-t pt-2">
           <p className="font-semibold">Gracias por su compra</p>
@@ -236,6 +300,11 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           <p className="text-[10px] text-gray-600">L-S 9:00-21:30</p>
           <p className="text-[10px] text-gray-600">{ticket.store.phone}</p>
           <p className="text-[10px] text-gray-600">{ticket.store.website}</p>
+        </div>
+
+        {/* Verification Link */}
+        <div className="text-[10px] text-gray-600 text-center">
+          Consulta tu ticket en {ticket.store.website}/ticket/{transactionId}
         </div>
 
         {barcodePosition === 3 && <BarcodeComponent />}
