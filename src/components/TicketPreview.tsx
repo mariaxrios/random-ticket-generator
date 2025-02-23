@@ -130,10 +130,6 @@ const formatBarcodeNumber = (invoiceNumber: string, timestamp: Date): string => 
   return `${prefix}${invoiceFirst4}${date}${invoiceBlock2}${invoiceBlock3}${padding}${random}`;
 };
 
-const calculateLoyaltyPoints = (total: number): number => {
-  return Math.floor(total * 10); // 10 puntos por euro
-};
-
 const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const total = calculateTotal(ticket.products);
   const vat4 = calculateVAT(ticket.products, 4);
