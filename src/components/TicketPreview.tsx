@@ -150,6 +150,10 @@ const getCardType = (): string => {
   return types[Math.floor(Math.random() * types.length)];
 };
 
+const formatOperationNumber = (): string => {
+  return Math.floor(Math.random() * 100000).toString().padStart(5, '0');
+};
+
 const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const total = calculateTotal(ticket.products);
   const vat4 = calculateVAT(ticket.products, 4);
@@ -162,7 +166,8 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const bagsSaved = useMemo(() => calculateBagsSaved(ticket.products), [ticket.products]);
   const carbonFootprint = useMemo(() => calculateCarbonFootprint(ticket.products), [ticket.products]);
   const loyaltyPoints = useMemo(() => calculateLoyaltyPoints(total), [total]);
-  
+  const operationNumber = useMemo(() => formatOperationNumber(), [ticket]);
+
   const totalDiscount = ticket.products.reduce((acc, product) => {
     const price = product.price * product.quantity;
     const discount = price * (product.discount || 0) / 100;
@@ -220,27 +225,28 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
 
   return (
     <div className={`w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden animate-fade-in ${design.borderStyle} border`}>
-      <div className={`p-4 text-sm ${design.spacing} ${randomFont}`}>
+      <div className={`p-4 text-xs leading-tight tracking-tight ${design.spacing} ${randomFont}`}>
         {/* Store Header */}
         <div className={`text-center space-y-0.5 border-b pb-2 ${design.headerBg} p-3 rounded-t-lg`}>
-          <h2 className="font-bold text-base flex items-center justify-center gap-2">
-            {ticket.store.name} <span className="font-bold text-sm">NIF: {ticket.store.nif}</span>
+          <h2 className="font-bold text-base tracking-tight leading-none">
+            {ticket.store.name}
           </h2>
-          <p className="text-xs">{ticket.store.address}</p>
-          <p className="text-xs">Tienda: {ticket.store.storeNumber}</p>
-          <p className="text-xs">CP: {ticket.store.postalCode}</p>
-          <p className="text-xs">{ticket.store.website}</p>
+          <p className="font-bold text-[11px] tracking-wide">{ticket.store.nif}</p>
+          <p className="text-[11px]">{ticket.store.address}</p>
+          <p className="text-[11px]">Tienda {ticket.store.storeNumber}</p>
+          <p className="text-[11px]">CP {ticket.store.postalCode}</p>
+          <p className="text-[11px]">{ticket.store.website}</p>
         </div>
 
         {barcodePosition === 0 && <CodeComponent />}
 
         {/* Ticket Info */}
-        <div className={`text-xs ${design.layout % 2 === 0 ? 'grid grid-cols-2' : 'space-y-1'} gap-0.5`}>
+        <div className={`text-[11px] ${design.layout % 2 === 0 ? 'grid grid-cols-2' : 'space-y-0.5'} gap-0.5`}>
           <p>Factura: {invoiceNumber}</p>
           <p>Fecha: {ticket.timestamp.toLocaleDateString("es-ES")}</p>
           <p>Caja: {ticket.cashierNumber}</p>
           <p>Hora: {ticket.timestamp.toLocaleTimeString("es-ES")}</p>
-          <p>Operación: {transactionId}</p>
+          <p>{operationNumber}</p>
         </div>
 
         {design.layout === 0 && renderInfoBlock()}
@@ -314,9 +320,9 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
 
         {/* Payment Details */}
         {ticket.paymentMethod === "card" && (
-          <div className={`text-xs space-y-1 border-t pt-2 ${design.layout % 2 === 0 ? '' : 'text-center'}`}>
+          <div className={`text-[11px] leading-tight space-y-0.5 border-t pt-2 ${design.layout % 2 === 0 ? '' : 'text-center'} tracking-tight`}>
             <p className="font-medium">{cardType}: {formatCardNumber("4532016798321456")}</p>
-            <div className={`grid ${design.layout % 2 === 0 ? 'grid-cols-2' : 'grid-cols-4'} gap-x-4`}>
+            <div className={`grid ${design.layout % 2 === 0 ? 'grid-cols-2' : 'grid-cols-4'} gap-x-2 gap-y-0.5`}>
               <p>NC: {authCodes.nc}</p>
               <p>AUT: {authCodes.aut}</p>
               <p>AID: {authCodes.aid}</p>
@@ -329,9 +335,9 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         {design.layout === 2 && renderPromoBlock()}
 
         {/* Footer */}
-        <div className={`text-center text-xs space-y-1 border-t pt-2 ${design.footerBg} rounded-b-lg p-2`}>
-          <p className="font-semibold">Gracias por su compra</p>
-          <p className={design.ecoColor}>{ecoMessage}</p>
+        <div className={`text-center space-y-0.5 border-t pt-2 ${design.footerBg} rounded-b-lg p-2`}>
+          <p className="font-semibold text-[11px]">Gracias por su compra</p>
+          <p className={`${design.ecoColor} text-[11px]`}>{ecoMessage}</p>
           <p className="text-[10px] text-gray-600">Devoluciones: 30 días con ticket</p>
           <p className="text-[10px] text-gray-600">L-S 9:00-21:30</p>
           <p className="text-[10px] text-gray-600">{ticket.store.phone}</p>
@@ -341,7 +347,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         {design.layout === 3 && renderPromoBlock()}
 
         {/* Verification Link */}
-        <div className="text-[10px] text-gray-600 text-center">
+        <div className="text-[10px] text-gray-600 text-center tracking-tight">
           Consulta tu ticket en {ticket.store.website}/ticket/{transactionId}
         </div>
 
