@@ -9,12 +9,13 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 const TicketGenerator = () => {
-  const [ticket, setTicket] = useState(generateTicket(20, 30, 10)); // Valores por defecto actualizados
+  const [ticket, setTicket] = useState(generateTicket(20, 30, 10));
   const [email, setEmail] = useState("");
-  const [totalItems, setTotalItems] = useState(20); // Cambiado a 20
-  const [producePercentage, setProducePercentage] = useState(30); // Cambiado a 30
-  const [ecoPercentage, setEcoPercentage] = useState(10); // Cambiado a 10
+  const [totalItems, setTotalItems] = useState(20);
+  const [producePercentage, setProducePercentage] = useState(30);
+  const [ecoPercentage, setEcoPercentage] = useState(10);
   const [useRealStores, setUseRealStores] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "cash">("card");
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
@@ -50,20 +51,10 @@ const TicketGenerator = () => {
       toast.error("El porcentaje de etiquetas eco/bio debe estar entre 0 y 100");
       return;
     }
-    setTicket(generateTicket(totalItems, producePercentage, ecoPercentage, useRealStores, userLocation));
-  };
-
-  const handleDownload = () => {
-    toast.success("Ticket download started");
-  };
-
-  const handleSendEmail = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) {
-      toast.error("Please enter an email address");
-      return;
-    }
-    toast.success(`Ticket sent to ${email}`);
+    
+    const newTicket = generateTicket(totalItems, producePercentage, ecoPercentage, useRealStores, userLocation);
+    newTicket.paymentMethod = paymentMethod;
+    setTicket(newTicket);
   };
 
   return (
@@ -71,7 +62,7 @@ const TicketGenerator = () => {
       <div className="text-center space-y-4">
         <h1 className="text-4xl font-bold tracking-tight">Generador de Tickets</h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Generate realistic supermarket receipts with random products, prices, and store information.
+          Genera tickets realistas de supermercado con productos, precios e información de tienda aleatorios.
           {userLocation ? (
             <span className="block text-sm text-green-600">
               Usando ubicación actual: {userLocation.latitude.toFixed(4)}, {userLocation.longitude.toFixed(4)}
@@ -86,6 +77,24 @@ const TicketGenerator = () => {
 
       <div className="max-w-md mx-auto space-y-4">
         <div className="grid grid-cols-1 gap-4">
+          <div>
+            <Label>Método de pago</Label>
+            <RadioGroup
+              defaultValue={paymentMethod}
+              onValueChange={(value) => setPaymentMethod(value as "card" | "cash")}
+              className="flex space-x-4 mt-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="card" id="card" />
+                <Label htmlFor="card">Tarjeta</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="cash" id="cash" />
+                <Label htmlFor="cash">Efectivo</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
           <div>
             <label htmlFor="totalItems" className="block text-sm font-medium text-gray-700 mb-1">
               Número de artículos
@@ -145,25 +154,9 @@ const TicketGenerator = () => {
           </RadioGroup>
         </div>
 
-        <div className="flex justify-center gap-4 flex-wrap">
-          <Button onClick={handleGenerate} className="bg-black hover:bg-gray-800 text-white">
-            Generate New Ticket
-          </Button>
-          <Button onClick={handleDownload} variant="outline">
-            Download Ticket
-          </Button>
-        </div>
-
-        <form onSubmit={handleSendEmail} className="flex gap-2">
-          <Input
-            type="email"
-            placeholder="Enter email to receive ticket"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="flex-1"
-          />
-          <Button type="submit">Send</Button>
-        </form>
+        <Button onClick={handleGenerate} className="w-full">
+          Generar nuevo ticket
+        </Button>
       </div>
 
       <div className="bg-gray-50 p-8 rounded-xl shadow-sm">

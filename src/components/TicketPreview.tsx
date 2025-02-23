@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Ticket, Product } from "../types/ticket";
 import Barcode from "react-barcode";
+import { QRCodeSVG } from "qrcode.react";
 
 interface TicketPreviewProps {
   ticket: Ticket;
@@ -130,6 +131,19 @@ const formatBarcodeNumber = (invoiceNumber: string, timestamp: Date): string => 
   return `${prefix}${invoiceFirst4}${date}${invoiceBlock2}${invoiceBlock3}${padding}${random}`;
 };
 
+const getRandomDesign = () => {
+  return {
+    headerBg: ["bg-purple-50", "bg-blue-50", "bg-green-50", "bg-yellow-50", "bg-pink-50"][Math.floor(Math.random() * 5)],
+    borderStyle: ["border-dashed", "border-dotted", "border-solid"][Math.floor(Math.random() * 3)],
+    spacing: ["space-y-2", "space-y-3", "space-y-4"][Math.floor(Math.random() * 3)],
+  };
+};
+
+const getCardType = (): string => {
+  const types = ["Visa", "Mastercard", "American Express", "Maestro"];
+  return types[Math.floor(Math.random() * types.length)];
+};
+
 const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const total = calculateTotal(ticket.products);
   const vat4 = calculateVAT(ticket.products, 4);
@@ -149,38 +163,48 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
     return acc + discount;
   }, 0);
 
-  const BarcodeComponent = () => (
-    <div className="flex justify-center">
-      <Barcode 
-        value={ticket.barcode}
-        width={1.2}
-        height={40}
-        fontSize={10}
-        margin={0}
-        displayValue={false}
-      />
-    </div>
+  const CodeComponent = () => (
+    useQR ? (
+      <div className="flex justify-center p-2">
+        <QRCodeSVG value={ticket.barcode} size={100} />
+      </div>
+    ) : (
+      <div className="flex justify-center">
+        <Barcode 
+          value={ticket.barcode}
+          width={1.2}
+          height={40}
+          fontSize={10}
+          margin={0}
+          displayValue={false}
+        />
+      </div>
+    )
   );
 
   const transactionId = useMemo(() => formatTransactionId(), [ticket]);
   const invoiceNumber = useMemo(() => formatInvoiceNumber(), [ticket]);
   const barcodeNumber = useMemo(() => formatBarcodeNumber(invoiceNumber, ticket.timestamp), [invoiceNumber, ticket.timestamp]);
   const authCodes = useMemo(() => generateAuthCodes(), [ticket]);
-  
+  const design = useMemo(() => getRandomDesign(), [ticket]);
+  const cardType = useMemo(() => getCardType(), [ticket]);
+  const useQR = useMemo(() => Math.random() > 0.5, [ticket]);
+
   return (
-    <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden animate-fade-in">
-      <div className={`p-4 text-sm space-y-2 ${randomFont}`}>
+    <div className={`w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden animate-fade-in ${design.borderStyle} border`}>
+      <div className={`p-4 text-sm ${design.spacing} ${randomFont}`}>
         {/* Store Header */}
-        <div className="text-center space-y-0.5 border-b pb-2">
-          <h2 className="font-bold text-base">{ticket.store.name}</h2>
+        <div className={`text-center space-y-0.5 border-b pb-2 ${design.headerBg} p-3 rounded-t-lg`}>
+          <h2 className="font-bold text-base">
+            {ticket.store.name} <span className="font-bold">NIF: {ticket.store.nif}</span>
+          </h2>
           <p className="text-xs">{ticket.store.address}</p>
-          <p className="text-xs">NIF: {ticket.store.nif}</p>
           <p className="text-xs">Tienda: {ticket.store.storeNumber}</p>
           <p className="text-xs">CP: {ticket.store.postalCode}</p>
           <p className="text-xs">{ticket.store.website}</p>
         </div>
 
-        {barcodePosition === 0 && <BarcodeComponent />}
+        {barcodePosition === 0 && <CodeComponent />}
 
         {/* Ticket Info */}
         <div className="text-xs grid grid-cols-2 gap-0.5">
@@ -188,12 +212,10 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           <p>Fecha: {ticket.timestamp.toLocaleDateString("es-ES")}</p>
           <p>Caja: {ticket.cashierNumber}</p>
           <p>Hora: {ticket.timestamp.toLocaleTimeString("es-ES")}</p>
-          <p>Empleado: {ticket.employeeId}</p>
-          <p>Nombre: {ticket.employeeName}</p>
-          <p>Ref: {transactionId}</p>
+          <p>Operación: {transactionId}</p>
         </div>
 
-        {barcodePosition === 1 && <BarcodeComponent />}
+        {barcodePosition === 1 && <CodeComponent />}
 
         {/* Products */}
         <div className="space-y-1 border-t pt-2">
@@ -248,7 +270,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           {promoMessage}
         </div>
 
-        {barcodePosition === 2 && <BarcodeComponent />}
+        {barcodePosition === 2 && <CodeComponent />}
 
         {/* Totals */}
         <div className="border-t pt-2 space-y-1">
@@ -267,18 +289,15 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
             </p>
           </div>
           <div className="text-base font-bold flex justify-between border-t pt-1">
-            <span>TOTAL</span>
+            <span>TOTAL {ticket.paymentMethod === "card" ? "TARJETA" : "EFECTIVO"}</span>
             <span>{formatCurrency(total)}</span>
-          </div>
-          <div className="text-xs text-gray-600">
-            <p>Forma de pago: {ticket.paymentMethod.toUpperCase()}</p>
           </div>
         </div>
 
         {/* Payment Details */}
         {ticket.paymentMethod === "card" && (
           <div className="text-xs space-y-1 border-t pt-2">
-            <p>Tarjeta: {formatCardNumber("4532016798321456")}</p>
+            <p>{cardType}: {formatCardNumber("4532016798321456")}</p>
             <div className="grid grid-cols-2 gap-x-4">
               <p>NC: {authCodes.nc}</p>
               <p>AUT: {authCodes.aut}</p>
@@ -303,7 +322,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           Consulta tu ticket en {ticket.store.website}/ticket/{transactionId}
         </div>
 
-        {barcodePosition === 3 && <BarcodeComponent />}
+        {barcodePosition === 3 && <CodeComponent />}
       </div>
     </div>
   );
