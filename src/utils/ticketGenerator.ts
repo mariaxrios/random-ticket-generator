@@ -66,11 +66,11 @@ export const generateTicket = (
   const ticketNumber = Math.floor(Math.random() * 900000 + 100000).toString();
   const store = generateStore(userLocation, useRealStores);
   
-  // Generate random options for ticket display
-  const useUppercase = Math.random() < 0.3; // 30% chance of uppercase
-  const showLoyaltyPoints = Math.random() < 0.7; // 70% chance of showing points
-  const showPromotions = Math.random() < 0.8; // 80% chance of showing promotions
-  const showEcoMessages = Math.random() < 0.6; // 60% chance of showing eco messages
+  // Generate random options for ticket display with updated percentages
+  const useUppercase = Math.random() < 0.5; // 50% chance of uppercase (increased from 30%)
+  const showLoyaltyPoints = Math.random() < 0.3; // 30% chance of showing points (decreased from 70%)
+  const showPromotions = Math.random() < 0.3; // 30% chance of showing promotions (decreased from 80%)
+  const showEcoMessages = Math.random() < 0.3; // 30% chance of showing eco messages (decreased from 60%)
 
   return {
     store,
