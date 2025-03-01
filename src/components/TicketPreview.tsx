@@ -246,7 +246,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           <p>Fecha: {ticket.timestamp.toLocaleDateString("es-ES")}</p>
           <p>Caja: {ticket.cashierNumber}</p>
           <p>Hora: {ticket.timestamp.toLocaleTimeString("es-ES")}</p>
-          <p>{operationNumber}</p>
+          <p>Operación: {operationNumber}</p>
         </div>
 
         {design.layout === 0 && renderInfoBlock()}

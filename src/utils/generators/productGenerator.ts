@@ -27,7 +27,8 @@ const getEcoLabel = (): string => {
 export const generateProducts = (
   totalItems: number = 30, 
   producePercentage: number = 50,
-  ecoPercentage: number = 50
+  ecoPercentage: number = 50,
+  tomatoPercentage: number = 0
 ): Product[] => {
   const numProducts = Math.min(totalItems, PRODUCTS.length);
   const products: Product[] = [];
@@ -36,39 +37,80 @@ export const generateProducts = (
 
   const numEcoProducts = Math.round((numProducts * ecoPercentage) / 100);
   const numProduceProducts = Math.round((numProducts * producePercentage) / 100);
+  const numTomatoProducts = Math.round((numProduceProducts * tomatoPercentage) / 100);
+  
   let ecoCount = 0;
+  let tomatoCount = 0;
   
-  // Primero, aseguramos el porcentaje de frutas y verduras
-  const fruitsAndVeggies = PRODUCTS.filter(p => p.category === "Frutas" || p.category === "Verduras");
-  
-  // Seleccionar frutas y verduras aleatorias
-  const selectedFruitsAndVeggies = fruitsAndVeggies
-    .sort(() => Math.random() - 0.5)
-    .slice(0, numProduceProducts);
-  
-  // Añadir frutas y verduras seleccionadas
-  selectedFruitsAndVeggies.forEach(product => {
-    const quantity = getRandomQuantity(product.unit);
-    const shouldBeEco = ecoCount < numEcoProducts;
-    if (shouldBeEco) ecoCount++;
+  // First, select tomato products if needed
+  if (numTomatoProducts > 0) {
+    const tomatoProducts = PRODUCTS.filter(p => p.name.toLowerCase().includes("tomate"));
     
-    usedProducts.add(product.name);
-    products.push({
-      ...product,
-      quantity,
-      discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
-      isEco: shouldBeEco,
-    });
-  });
+    if (tomatoProducts.length > 0) {
+      // If we have multiple tomato varieties, select them
+      const selectedTomatoes = tomatoProducts
+        .sort(() => Math.random() - 0.5)
+        .slice(0, Math.min(numTomatoProducts, tomatoProducts.length));
+      
+      // Add tomato products
+      selectedTomatoes.forEach(product => {
+        const quantity = getRandomQuantity(product.unit);
+        const shouldBeEco = ecoCount < numEcoProducts;
+        if (shouldBeEco) ecoCount++;
+        
+        usedProducts.add(product.name);
+        tomatoCount++;
+        
+        products.push({
+          ...product,
+          quantity,
+          discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
+          isEco: shouldBeEco,
+        });
+      });
+    }
+  }
   
-  // Luego, llenar el resto de productos
+  // Then, select remaining fruits and vegetables
+  const remainingProduceProducts = numProduceProducts - tomatoCount;
+  
+  if (remainingProduceProducts > 0) {
+    const fruitsAndVeggies = PRODUCTS.filter(
+      p => (p.category === "Frutas" || p.category === "Verduras") && 
+           !p.name.toLowerCase().includes("tomate") && 
+           !usedProducts.has(p.name)
+    );
+    
+    // Select remaining fruits and vegetables randomly
+    const selectedFruitsAndVeggies = fruitsAndVeggies
+      .sort(() => Math.random() - 0.5)
+      .slice(0, Math.min(remainingProduceProducts, fruitsAndVeggies.length));
+    
+    // Add fruits and vegetables
+    selectedFruitsAndVeggies.forEach(product => {
+      const quantity = getRandomQuantity(product.unit);
+      const shouldBeEco = ecoCount < numEcoProducts;
+      if (shouldBeEco) ecoCount++;
+      
+      usedProducts.add(product.name);
+      
+      products.push({
+        ...product,
+        quantity,
+        discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
+        isEco: shouldBeEco,
+      });
+    });
+  }
+  
+  // Finally, fill the rest of products
   const remainingEcoProducts = numEcoProducts - ecoCount;
   const remainingProducts = numProducts - products.length;
   let nonProduceEcoCount = 0;
   
   categories.forEach(category => {
     if (products.length >= numProducts) return;
-    if (category === "Frutas" || category === "Verduras") return; // Ya procesados
+    if (category === "Frutas" || category === "Verduras") return; // Already processed
     
     const categoryProducts = PRODUCTS.filter(p => p.category === category);
     const availableSlots = Math.min(
@@ -97,7 +139,7 @@ export const generateProducts = (
     });
   });
 
-  // Llenar los productos restantes si es necesario
+  // Fill remaining products if necessary
   while (products.length < numProducts) {
     const availableProducts = PRODUCTS.filter(p => !usedProducts.has(p.name));
     if (availableProducts.length === 0) break;

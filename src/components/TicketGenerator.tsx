@@ -9,11 +9,11 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 const TicketGenerator = () => {
-  const [ticket, setTicket] = useState(generateTicket(20, 30, 10));
-  const [email, setEmail] = useState("");
+  const [ticket, setTicket] = useState(generateTicket(20, 30, 10, 0));
   const [totalItems, setTotalItems] = useState(20);
   const [producePercentage, setProducePercentage] = useState(30);
   const [ecoPercentage, setEcoPercentage] = useState(10);
+  const [tomatoPercentage, setTomatoPercentage] = useState(0);
   const [useRealStores, setUseRealStores] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"card" | "cash">("card");
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -51,8 +51,12 @@ const TicketGenerator = () => {
       toast.error("El porcentaje de etiquetas eco/bio debe estar entre 0 y 100");
       return;
     }
+    if (tomatoPercentage < 0 || tomatoPercentage > 100) {
+      toast.error("El porcentaje de tomates debe estar entre 0 y 100");
+      return;
+    }
     
-    const newTicket = generateTicket(totalItems, producePercentage, ecoPercentage, useRealStores, userLocation);
+    const newTicket = generateTicket(totalItems, producePercentage, ecoPercentage, tomatoPercentage, useRealStores, userLocation);
     newTicket.paymentMethod = paymentMethod;
     setTicket(newTicket);
   };
@@ -96,9 +100,9 @@ const TicketGenerator = () => {
           </div>
 
           <div>
-            <label htmlFor="totalItems" className="block text-sm font-medium text-gray-700 mb-1">
+            <Label htmlFor="totalItems" className="block text-sm font-medium text-gray-700 mb-1">
               Número de artículos
-            </label>
+            </Label>
             <Input
               id="totalItems"
               type="number"
@@ -109,9 +113,9 @@ const TicketGenerator = () => {
             />
           </div>
           <div>
-            <label htmlFor="producePercentage" className="block text-sm font-medium text-gray-700 mb-1">
+            <Label htmlFor="producePercentage" className="block text-sm font-medium text-gray-700 mb-1">
               % Frutas y verduras
-            </label>
+            </Label>
             <Input
               id="producePercentage"
               type="number"
@@ -122,9 +126,22 @@ const TicketGenerator = () => {
             />
           </div>
           <div>
-            <label htmlFor="ecoPercentage" className="block text-sm font-medium text-gray-700 mb-1">
+            <Label htmlFor="tomatoPercentage" className="block text-sm font-medium text-gray-700 mb-1">
+              % Tomates (dentro de frutas y verduras)
+            </Label>
+            <Input
+              id="tomatoPercentage"
+              type="number"
+              min="0"
+              max="100"
+              value={tomatoPercentage}
+              onChange={(e) => setTomatoPercentage(Number(e.target.value))}
+            />
+          </div>
+          <div>
+            <Label htmlFor="ecoPercentage" className="block text-sm font-medium text-gray-700 mb-1">
               % Etiquetas ECO/BIO
-            </label>
+            </Label>
             <Input
               id="ecoPercentage"
               type="number"
