@@ -47,10 +47,24 @@ export const generateProducts = (
     const tomatoProducts = PRODUCTS.filter(p => p.name.toLowerCase().includes("tomate"));
     
     if (tomatoProducts.length > 0) {
-      // If we have multiple tomato varieties, select them
-      const selectedTomatoes = tomatoProducts
-        .sort(() => Math.random() - 0.5)
-        .slice(0, Math.min(numTomatoProducts, tomatoProducts.length));
+      // If we have multiple tomato varieties, select them randomly
+      const selectedTomatoes = [];
+      
+      // Try to get all unique tomato varieties first if there are enough requested
+      if (numTomatoProducts >= tomatoProducts.length) {
+        selectedTomatoes.push(...tomatoProducts);
+        
+        // If we need more tomatoes than varieties, add duplicates randomly
+        const additionalTomatoes = numTomatoProducts - tomatoProducts.length;
+        for (let i = 0; i < additionalTomatoes; i++) {
+          const randomTomato = tomatoProducts[Math.floor(Math.random() * tomatoProducts.length)];
+          selectedTomatoes.push(randomTomato);
+        }
+      } else {
+        // If we need fewer tomatoes than available varieties, pick random unique ones
+        const shuffledTomatoes = [...tomatoProducts].sort(() => Math.random() - 0.5);
+        selectedTomatoes.push(...shuffledTomatoes.slice(0, numTomatoProducts));
+      }
       
       // Add tomato products
       selectedTomatoes.forEach(product => {

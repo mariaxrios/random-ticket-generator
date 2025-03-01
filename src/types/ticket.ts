@@ -20,6 +20,13 @@ export interface Store {
   storeNumber: string;
 }
 
+export interface DisplayOptions {
+  useUppercase: boolean;
+  showLoyaltyPoints: boolean;
+  showPromotions: boolean;
+  showEcoMessages: boolean;
+}
+
 export interface Ticket {
   store: Store;
   products: Product[];
@@ -30,4 +37,5 @@ export interface Ticket {
   employeeId: string;
   employeeName: string;
   barcode: string;
+  displayOptions: DisplayOptions;
 }

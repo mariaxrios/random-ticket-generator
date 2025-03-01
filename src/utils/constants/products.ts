@@ -1,3 +1,4 @@
+
 import { Product } from "../../types/ticket";
 
 export const PRODUCTS: Array<Omit<Product, "quantity" | "discount" | "isEco">> = [
@@ -6,7 +7,13 @@ export const PRODUCTS: Array<Omit<Product, "quantity" | "discount" | "isEco">> =
   { name: "Manzanas", category: "Frutas", unit: "kg", vatRate: 4, price: 2.49 },
   { name: "Zanahorias", category: "Verduras", unit: "kg", vatRate: 4, price: 1.89 },
   { name: "Espinacas", category: "Verduras", unit: "kg", vatRate: 4, price: 2.99 },
-  { name: "Tomates", category: "Verduras", unit: "kg", vatRate: 4, price: 2.79 },
+  { name: "Tomate Roma", category: "Verduras", unit: "kg", vatRate: 4, price: 2.79 },
+  { name: "Tomate Cherry", category: "Verduras", unit: "kg", vatRate: 4, price: 3.49 },
+  { name: "Tomate RAF", category: "Verduras", unit: "kg", vatRate: 4, price: 4.99 },
+  { name: "Tomate Kumato", category: "Verduras", unit: "kg", vatRate: 4, price: 3.99 },
+  { name: "Tomate Pera", category: "Verduras", unit: "kg", vatRate: 4, price: 2.49 },
+  { name: "Tomate Verde", category: "Verduras", unit: "kg", vatRate: 4, price: 3.29 },
+  { name: "Tomate Ensalada", category: "Verduras", unit: "kg", vatRate: 4, price: 2.59 },
   { name: "Patatas", category: "Verduras", unit: "kg", vatRate: 4, price: 1.49 },
   { name: "Cebollas", category: "Verduras", unit: "kg", vatRate: 4, price: 1.69 },
   { name: "Pimientos", category: "Verduras", unit: "kg", vatRate: 4, price: 3.29 },

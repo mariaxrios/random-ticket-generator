@@ -65,6 +65,12 @@ export const generateTicket = (
   const paymentMethods = ["cash", "card", "contactless", "bizum"] as const;
   const ticketNumber = Math.floor(Math.random() * 900000 + 100000).toString();
   const store = generateStore(userLocation, useRealStores);
+  
+  // Generate random options for ticket display
+  const useUppercase = Math.random() < 0.3; // 30% chance of uppercase
+  const showLoyaltyPoints = Math.random() < 0.7; // 70% chance of showing points
+  const showPromotions = Math.random() < 0.8; // 80% chance of showing promotions
+  const showEcoMessages = Math.random() < 0.6; // 60% chance of showing eco messages
 
   return {
     store,
@@ -76,5 +82,11 @@ export const generateTicket = (
     employeeId: `E${Math.floor(Math.random() * 9000 + 1000)}`,
     employeeName: generateEmployeeName(),
     barcode: generateBarcode(ticketNumber, timestamp, store.storeNumber, store.postalCode),
+    displayOptions: {
+      useUppercase,
+      showLoyaltyPoints,
+      showPromotions,
+      showEcoMessages
+    }
   };
 };
