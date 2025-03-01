@@ -1,4 +1,3 @@
-
 import { Ticket } from "../types/ticket";
 import { generateStore } from "./generators/storeGenerator";
 import { generateProducts } from "./generators/productGenerator";
@@ -33,21 +32,8 @@ const generateValidTimestamp = (): Date => {
       0
     );
   } else {
-    // If within opening hours, just generate a timestamp within the last 5 days
-    const daysAgo = Math.floor(Math.random() * 5) + 1; // Sumamos 1 para excluir el día actual
-    result.setDate(result.getDate() - daysAgo);
-
-    // Generar una hora aleatoria entre 9:00 y 21:30
-    const minHour = 9;
-    const maxHour = 21;
-    const maxMinute = result.getHours() === maxHour ? 30 : 59; // Si es 21h, máximo 30 minutos
-
-    result.setHours(
-      minHour + Math.floor(Math.random() * (maxHour - minHour + 1)),
-      Math.floor(Math.random() * (maxMinute + 1)),
-      Math.floor(Math.random() * 60),
-      0
-    );
+    // Si estamos dentro del horario de apertura, priorizar la fecha y hora actual
+    return now;
   }
 
   return result;
