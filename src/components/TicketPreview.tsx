@@ -174,6 +174,11 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
     return acc + discount;
   }, 0);
 
+  // Función para aplicar mayúsculas si está activa la opción
+  const formatText = (text: string) => {
+    return ticket.displayOptions.useUppercase ? text.toUpperCase() : text;
+  };
+
   const CodeComponent = () => (
     useQR ? (
       <div className="flex justify-center p-2">
@@ -202,23 +207,27 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const useQR = useMemo(() => Math.random() > 0.5, [ticket]);
 
   const renderInfoBlock = () => (
-    <div className={`text-xs space-y-1 ${design.layout % 2 === 0 ? 'border-t' : 'border-b'} py-2`}>
-      <p className={design.infoColor}>Puntos acumulados: {loyaltyPoints}</p>
-      <p className={design.ecoColor}>Has ahorrado {bagsSaved} bolsas de plástico</p>
-      <p className="text-gray-600">Huella de carbono: {carbonFootprint}kg CO2</p>
-    </div>
+    ticket.displayOptions.showLoyaltyPoints ? (
+      <div className={`text-xs space-y-1 ${design.layout % 2 === 0 ? 'border-t' : 'border-b'} py-2`}>
+        <p className={design.infoColor}>{formatText("Puntos acumulados")}: {loyaltyPoints}</p>
+        <p className={design.ecoColor}>{formatText("Has ahorrado")} {bagsSaved} {formatText("bolsas de plástico")}</p>
+        <p className="text-gray-600">{formatText("Huella de carbono")}: {carbonFootprint}kg CO2</p>
+      </div>
+    ) : null
   );
 
   const renderPromoBlock = () => (
-    <div className={`text-xs font-bold ${design.savingsColor} ${design.promoStyle} p-2 rounded`}>
-      {promoMessage}
-    </div>
+    ticket.displayOptions.showPromotions ? (
+      <div className={`text-xs font-bold ${design.savingsColor} ${design.promoStyle} p-2 rounded`}>
+        {formatText(promoMessage)}
+      </div>
+    ) : null
   );
 
   const renderSavingsBlock = () => (
     totalDiscount > 0 && (
       <div className={`text-xs ${design.savingsColor} font-bold p-2 ${design.layout % 2 === 0 ? 'text-right' : 'text-center'}`}>
-        AHORRO TOTAL: {formatCurrency(totalDiscount)}
+        {formatText("AHORRO TOTAL")}: {formatCurrency(totalDiscount)}
       </div>
     )
   );
@@ -229,24 +238,24 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         {/* Store Header */}
         <div className={`text-center space-y-0.5 border-b pb-2 ${design.headerBg} p-3 rounded-t-lg`}>
           <h2 className="font-bold text-base tracking-tight leading-none">
-            {ticket.store.name}
+            {formatText(ticket.store.name)}
           </h2>
-          <p className="font-bold text-[11px] tracking-wide">{ticket.store.nif}</p>
-          <p className="text-[11px]">{ticket.store.address}</p>
-          <p className="text-[11px]">Tienda {ticket.store.storeNumber}</p>
+          <p className="font-bold text-[11px] tracking-wide">{formatText(ticket.store.nif)}</p>
+          <p className="text-[11px]">{formatText(ticket.store.address)}</p>
+          <p className="text-[11px]">{formatText("Tienda")} {ticket.store.storeNumber}</p>
           <p className="text-[11px]">CP {ticket.store.postalCode}</p>
-          <p className="text-[11px]">{ticket.store.website}</p>
+          <p className="text-[11px]">{formatText(ticket.store.website)}</p>
         </div>
 
         {barcodePosition === 0 && <CodeComponent />}
 
         {/* Ticket Info */}
         <div className={`text-[11px] ${design.layout % 2 === 0 ? 'grid grid-cols-2' : 'space-y-0.5'} gap-0.5`}>
-          <p>Factura: {invoiceNumber}</p>
-          <p>Fecha: {ticket.timestamp.toLocaleDateString("es-ES")}</p>
-          <p>Caja: {ticket.cashierNumber}</p>
-          <p>Hora: {ticket.timestamp.toLocaleTimeString("es-ES")}</p>
-          <p>Operación: {operationNumber}</p>
+          <p>{formatText("Factura")}: {invoiceNumber}</p>
+          <p>{formatText("Fecha")}: {ticket.timestamp.toLocaleDateString("es-ES")}</p>
+          <p>{formatText("Caja")}: {ticket.cashierNumber}</p>
+          <p>{formatText("Hora")}: {ticket.timestamp.toLocaleTimeString("es-ES")}</p>
+          <p>{formatText("Operación")}: {operationNumber}</p>
         </div>
 
         {design.layout === 0 && renderInfoBlock()}
@@ -258,11 +267,11 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
             <div key={index} className="flex justify-between text-xs leading-tight">
               <div className="flex-1">
                 <span className="font-semibold">
-                  {product.name} {product.isEco && getEcoLabel()}
+                  {formatText(product.name)} {product.isEco && formatText(getEcoLabel())}
                 </span>
                 <br />
                 <span className="text-gray-600">
-                  {product.quantity} {product.unit} x {formatCurrency(product.price)}
+                  {product.quantity} {formatText(product.unit)} x {formatCurrency(product.price)}
                   {product.unit === 'kg' && ` (${formatCurrency(product.price * product.quantity)} / kg)`}
                 </span>
               </div>
@@ -297,20 +306,20 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         <div className="border-t pt-2 space-y-1">
           <div className="text-xs space-y-0.5">
             <p className="flex justify-between">
-              <span>IVA 4%:</span>
+              <span>{formatText("IVA 4%")}:</span>
               <span>{formatCurrency(vat4)}</span>
             </p>
             <p className="flex justify-between">
-              <span>IVA 10%:</span>
+              <span>{formatText("IVA 10%")}:</span>
               <span>{formatCurrency(vat10)}</span>
             </p>
             <p className="flex justify-between">
-              <span>IVA 21%:</span>
+              <span>{formatText("IVA 21%")}:</span>
               <span>{formatCurrency(vat21)}</span>
             </p>
           </div>
           <div className="text-base font-bold flex justify-between border-t pt-1">
-            <span>TOTAL {ticket.paymentMethod === "card" ? "TARJETA" : "EFECTIVO"}</span>
+            <span>{formatText("TOTAL")} {formatText(ticket.paymentMethod === "card" ? "TARJETA" : "EFECTIVO")}</span>
             <span>{formatCurrency(total)}</span>
           </div>
         </div>
@@ -321,7 +330,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         {/* Payment Details */}
         {ticket.paymentMethod === "card" && (
           <div className={`text-[11px] leading-tight space-y-0.5 border-t pt-2 ${design.layout % 2 === 0 ? '' : 'text-center'} tracking-tight`}>
-            <p className="font-medium">{cardType}: {formatCardNumber("4532016798321456")}</p>
+            <p className="font-medium">{formatText(cardType)}: {formatCardNumber("4532016798321456")}</p>
             <div className={`grid ${design.layout % 2 === 0 ? 'grid-cols-2' : 'grid-cols-4'} gap-x-2 gap-y-0.5`}>
               <p>NC: {authCodes.nc}</p>
               <p>AUT: {authCodes.aut}</p>
@@ -336,19 +345,21 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
 
         {/* Footer */}
         <div className={`text-center space-y-0.5 border-t pt-2 ${design.footerBg} rounded-b-lg p-2`}>
-          <p className="font-semibold text-[11px]">Gracias por su compra</p>
-          <p className={`${design.ecoColor} text-[11px]`}>{ecoMessage}</p>
-          <p className="text-[10px] text-gray-600">Devoluciones: 30 días con ticket</p>
-          <p className="text-[10px] text-gray-600">L-S 9:00-21:30</p>
+          <p className="font-semibold text-[11px]">{formatText("Gracias por su compra")}</p>
+          {ticket.displayOptions.showEcoMessages && (
+            <p className={`${design.ecoColor} text-[11px]`}>{formatText(ecoMessage)}</p>
+          )}
+          <p className="text-[10px] text-gray-600">{formatText("Devoluciones: 30 días con ticket")}</p>
+          <p className="text-[10px] text-gray-600">{formatText("L-S 9:00-21:30")}</p>
           <p className="text-[10px] text-gray-600">{ticket.store.phone}</p>
-          <p className="text-[10px] text-gray-600">{ticket.store.website}</p>
+          <p className="text-[10px] text-gray-600">{formatText(ticket.store.website)}</p>
         </div>
 
         {design.layout === 3 && renderPromoBlock()}
 
         {/* Verification Link */}
         <div className="text-[10px] text-gray-600 text-center tracking-tight">
-          Consulta tu ticket en {ticket.store.website}/ticket/{transactionId}
+          {formatText("Consulta tu ticket en")} {formatText(`${ticket.store.website}/ticket/${transactionId}`)}
         </div>
 
         {barcodePosition === 3 && <CodeComponent />}
