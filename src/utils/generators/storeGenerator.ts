@@ -97,6 +97,7 @@ export const generateStore = (
     const storeData = REAL_STORE_DATA[storeIndex];
     const localPhone = Math.floor(Math.random() * 900000000 + 100000000).toString();
 
+    // For real stores, use the region's postal code, not a random one
     return {
       name: storeData.name,
       address: `${address}`,

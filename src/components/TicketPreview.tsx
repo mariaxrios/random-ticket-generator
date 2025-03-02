@@ -167,6 +167,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const carbonFootprint = useMemo(() => calculateCarbonFootprint(ticket.products), [ticket.products]);
   const loyaltyPoints = useMemo(() => calculateLoyaltyPoints(total), [total]);
   const operationNumber = useMemo(() => formatOperationNumber(), [ticket]);
+  const invoiceDetailsPosition = useMemo(() => Math.floor(Math.random() * 4), [ticket]);
 
   const totalDiscount = ticket.products.reduce((acc, product) => {
     const price = product.price * product.quantity;
@@ -231,6 +232,17 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
     )
   );
 
+  const renderInvoiceDetails = () => (
+    <div className={`text-[11px] ${design.layout % 2 === 0 ? 'grid grid-cols-2' : 'space-y-0.5'} gap-0.5`}>
+      <p>{formatText("Factura")}: {invoiceNumber}</p>
+      <p>{formatText("Fecha")}: {ticket.timestamp.toLocaleDateString("es-ES")}</p>
+      <p>{formatText("Caja")}: {ticket.cashierNumber}</p>
+      <p>{formatText("Hora")}: {ticket.timestamp.toLocaleTimeString("es-ES")}</p>
+      <p>{formatText("Operación")}: {operationNumber}</p>
+      <p>{formatText("Tienda")}: {ticket.store.storeNumber}</p>
+    </div>
+  );
+
   return (
     <div className={`w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden animate-fade-in ${design.borderStyle} border`}>
       <div className={`p-4 text-xs leading-tight tracking-tight ${design.spacing} ${randomFont}`}>
@@ -244,18 +256,11 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         </div>
 
         {barcodePosition === 0 && <CodeComponent />}
-
-        <div className={`text-[11px] ${design.layout % 2 === 0 ? 'grid grid-cols-2' : 'space-y-0.5'} gap-0.5`}>
-          <p>{formatText("Factura")}: {invoiceNumber}</p>
-          <p>{formatText("Fecha")}: {ticket.timestamp.toLocaleDateString("es-ES")}</p>
-          <p>{formatText("Caja")}: {ticket.cashierNumber}</p>
-          <p>{formatText("Hora")}: {ticket.timestamp.toLocaleTimeString("es-ES")}</p>
-          <p>{formatText("Operación")}: {operationNumber}</p>
-          <p>{formatText("Tienda")}: {ticket.store.storeNumber}</p>
-        </div>
+        {invoiceDetailsPosition === 0 && renderInvoiceDetails()}
 
         {design.layout === 0 && renderInfoBlock()}
         {barcodePosition === 1 && <CodeComponent />}
+        {invoiceDetailsPosition === 1 && renderInvoiceDetails()}
 
         <div className="space-y-1 border-t pt-2">
           {ticket.products.map((product, index) => (
@@ -296,6 +301,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         {renderSavingsBlock()}
 
         {barcodePosition === 2 && <CodeComponent />}
+        {invoiceDetailsPosition === 2 && renderInvoiceDetails()}
 
         <div className="border-t pt-2 space-y-1">
           <div className="text-xs space-y-0.5">
@@ -335,6 +341,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
 
         {design.layout === 3 && renderInfoBlock()}
         {design.layout === 2 && renderPromoBlock()}
+        {invoiceDetailsPosition === 3 && renderInvoiceDetails()}
 
         <div className={`text-center space-y-0.5 border-t pt-2 ${design.footerBg} rounded-b-lg p-2`}>
           <p className="font-semibold text-[11px]">{formatText("Gracias por su compra")}</p>
