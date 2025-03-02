@@ -50,27 +50,68 @@ export const generateStore = (
   const numero = Math.floor(Math.random() * 100) + 1;
   const address = `${street}, ${numero}`;
   
-  // Códigos postales reales según región
+  // Generate postal code based on the municipality's region
   let postalCode;
+  
+  // Códigos postales reales según región
   switch (region.name) {
     case "Madrid":
       postalCode = `280${Math.floor(Math.random() * 55).toString().padStart(2, '0')}`; // 28001-28055
       break;
     case "Barcelona":
+    case "Cataluña":
       postalCode = `080${Math.floor(Math.random() * 40).toString().padStart(2, '0')}`; // 08001-08040
       break;
     case "Valencia":
+    case "Comunidad Valenciana":
       postalCode = `460${Math.floor(Math.random() * 30).toString().padStart(2, '0')}`; // 46001-46030
       break;
     case "Sevilla":
+    case "Andalucía":
       postalCode = `410${Math.floor(Math.random() * 30).toString().padStart(2, '0')}`; // 41001-41030
       break;
+    case "Galicia":
+      postalCode = `150${Math.floor(Math.random() * 30).toString().padStart(2, '0')}`; // 15001-15030 (A Coruña)
+      break;
+    case "Asturias":
+      postalCode = `330${Math.floor(Math.random() * 20).toString().padStart(2, '0')}`; // 33001-33020 (Oviedo)
+      break;
+    case "Cantabria":
+      postalCode = `390${Math.floor(Math.random() * 20).toString().padStart(2, '0')}`; // 39001-39020 (Santander)
+      break;
+    case "País Vasco":
+      postalCode = `480${Math.floor(Math.random() * 20).toString().padStart(2, '0')}`; // 48001-48020 (Bilbao)
+      break;
+    case "Navarra":
+      postalCode = `310${Math.floor(Math.random() * 20).toString().padStart(2, '0')}`; // 31001-31020 (Pamplona)
+      break;
+    case "La Rioja":
+      postalCode = `260${Math.floor(Math.random() * 10).toString().padStart(2, '0')}`; // 26001-26010 (Logroño)
+      break;
+    case "Aragón":
+      postalCode = `500${Math.floor(Math.random() * 20).toString().padStart(2, '0')}`; // 50001-50020 (Zaragoza)
+      break;
+    case "Castilla y León":
+      postalCode = `470${Math.floor(Math.random() * 20).toString().padStart(2, '0')}`; // 47001-47020 (Valladolid)
+      break;
+    case "Castilla-La Mancha":
+      postalCode = `450${Math.floor(Math.random() * 20).toString().padStart(2, '0')}`; // 45001-45020 (Toledo)
+      break;
+    case "Extremadura":
+      postalCode = `060${Math.floor(Math.random() * 10).toString().padStart(2, '0')}`; // 06001-06010 (Badajoz)
+      break;
+    case "Murcia":
+      postalCode = `300${Math.floor(Math.random() * 20).toString().padStart(2, '0')}`; // 30001-30020 (Murcia)
+      break;
+    case "Islas Baleares":
+      postalCode = `070${Math.floor(Math.random() * 20).toString().padStart(2, '0')}`; // 07001-07020 (Palma)
+      break;
+    case "Canarias":
+      postalCode = `350${Math.floor(Math.random() * 20).toString().padStart(2, '0')}`; // 35001-35020 (Las Palmas)
+      break;
     default:
-      // Para otras regiones usamos el primer código postal de provincia
-      const provinceCode = region.name === "Cataluña" ? "08" : 
-                          region.name === "Andalucía" ? "41" :
-                          region.name === "Comunidad Valenciana" ? "46" : "28";
-      postalCode = `${provinceCode}${Math.floor(Math.random() * 999).toString().padStart(3, '0')}`;
+      // Fallback to Madrid postal code
+      postalCode = `280${Math.floor(Math.random() * 55).toString().padStart(2, '0')}`;
   }
 
   // Generar número de tienda con formato específico según cadena
@@ -87,6 +128,18 @@ export const generateStore = (
         return `D${number.toString().padStart(4, '0')}`;
       case "Lidl":
         return `L${number.toString().padStart(4, '0')}`;
+      case "Eroski":
+        return `E${number.toString().padStart(4, '0')}`;
+      case "Alcampo":
+        return `A${number.toString().padStart(4, '0')}`;
+      case "Consum":
+        return `CN${number.toString().padStart(3, '0')}`;
+      case "Ahorramás":
+        return `AH${number.toString().padStart(3, '0')}`;
+      case "El Corte Inglés Supermercado":
+        return `ECI${number.toString().padStart(3, '0')}`;
+      case "Supercor":
+        return `SC${number.toString().padStart(3, '0')}`;
       default:
         return number.toString();
     }
@@ -97,9 +150,8 @@ export const generateStore = (
     const storeData = REAL_STORE_DATA[storeIndex];
     const localPhone = Math.floor(Math.random() * 900000000 + 100000000).toString();
 
-    // For real stores, use the region's postal code, not a random one
     return {
-      name: storeData.name,
+      name: `${storeData.name} ${storeData.type}`,
       address: `${address}`,
       city: municipality,
       nif: storeData.nif,

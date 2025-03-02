@@ -1,4 +1,3 @@
-
 export const FICTIONAL_STORE_NAMES = [
   "EcoMarket Supermercados S.A.U.",
   "BioAliment Supermercados",
@@ -11,58 +10,99 @@ interface RealStore {
   name: string;
   nif: string;
   website: string;
+  type: string;
 }
 
 export const REAL_STORE_DATA: RealStore[] = [
   {
     name: "Mercadona",
-    nif: "A46103834",
-    website: "www.mercadona.es"
+    nif: "A46003722",
+    website: "www.mercadona.es",
+    type: "S.A."
   },
   {
     name: "Carrefour",
-    nif: "A28425270",
-    website: "www.carrefour.es"
+    nif: "A28023719",
+    website: "www.carrefour.es",
+    type: "S.A."
   },
   {
     name: "Día",
-    nif: "A28164754",
-    website: "www.dia.es"
+    nif: "A28023719",
+    website: "www.dia.es",
+    type: "S.A."
   },
   {
     name: "Lidl",
     nif: "A60195278",
-    website: "www.lidl.es"
+    website: "www.lidl.es",
+    type: "S.A."
   },
   {
     name: "Alcampo",
-    nif: "A28581882",
-    website: "www.alcampo.es"
+    nif: "A28023719",
+    website: "www.alcampo.es",
+    type: "S.A."
   },
   {
     name: "El Corte Inglés Supermercado",
-    nif: "A28017895",
-    website: "www.elcorteingles.es"
+    nif: "A28023719",
+    website: "www.elcorteingles.es",
+    type: "S.A."
   },
   {
     name: "Aldi",
-    nif: "B62409063",
-    website: "www.aldi.es"
+    nif: "B21679069",
+    website: "www.aldi.es",
+    type: "S.L."
   },
   {
     name: "Consum",
-    nif: "F46078986",
-    website: "www.consum.es"
+    nif: "F46004238",
+    website: "www.consum.es",
+    type: "Cooperativa"
   },
   {
     name: "Eroski",
-    nif: "F20033361",
-    website: "www.eroski.es"
+    nif: "F20001935",
+    website: "www.eroski.es",
+    type: "Cooperativa"
   },
   {
-    name: "BonÀrea",
-    nif: "F25008202",
-    website: "www.bonarea.com"
+    name: "Ahorramás",
+    nif: "A28023719",
+    website: "www.ahorramás.com",
+    type: "S.A."
+  },
+  {
+    name: "Spar",
+    nif: "A28023719",
+    website: "www.spar.es",
+    type: "S.A."
+  },
+  {
+    name: "Supercor",
+    nif: "A28023719",
+    website: "www.supercor.es",
+    type: "S.A."
+  },
+  {
+    name: "BM Supermercados",
+    nif: "B48983343",
+    website: "www.bmsupermercados.es",
+    type: "S.L."
+  },
+  {
+    name: "Leclerc",
+    nif: "A28023719",
+    website: "www.leclerc.es",
+    type: "S.A."
+  },
+  {
+    name: "Covirán",
+    nif: "F18006232",
+    website: "www.coviran.es",
+    type: "Cooperativa"
   }
 ];
 

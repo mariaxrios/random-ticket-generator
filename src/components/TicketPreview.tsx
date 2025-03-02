@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Ticket } from "../types/ticket";
 import {
@@ -53,6 +52,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   // Generate random elements and design
   const randomFont = useMemo(() => getRandomFont(), [ticket]);
   const barcodePosition = useMemo(() => getBarcodePosition(), [ticket]);
+  const invoiceDetailsPosition = useMemo(() => Math.floor(Math.random() * 4), [ticket]);
   const ecoMessage = useMemo(() => getEcoMessage(), [ticket]);
   const promoMessage = useMemo(() => getPromoMessage(), [ticket]);
   const bagsSaved = useMemo(() => calculateBagsSaved(ticket.products), [ticket.products]);
