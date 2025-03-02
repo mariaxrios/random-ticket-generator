@@ -174,7 +174,6 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
     return acc + discount;
   }, 0);
 
-  // Función para aplicar mayúsculas si está activa la opción
   const formatText = (text: string) => {
     return ticket.displayOptions.useUppercase ? text.toUpperCase() : text;
   };
@@ -235,33 +234,29 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   return (
     <div className={`w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden animate-fade-in ${design.borderStyle} border`}>
       <div className={`p-4 text-xs leading-tight tracking-tight ${design.spacing} ${randomFont}`}>
-        {/* Store Header */}
         <div className={`text-center space-y-0.5 border-b pb-2 ${design.headerBg} p-3 rounded-t-lg`}>
           <h2 className="font-bold text-base tracking-tight leading-none">
             {formatText(ticket.store.name)}
           </h2>
-          <p className="font-bold text-[11px] tracking-wide">{formatText(ticket.store.nif)}</p>
           <p className="text-[11px]">{formatText(ticket.store.address)}</p>
-          <p className="text-[11px]">{formatText("Tienda")} {ticket.store.storeNumber}</p>
-          <p className="text-[11px]">CP {ticket.store.postalCode}</p>
-          <p className="text-[11px]">{formatText(ticket.store.website)}</p>
+          <p className="text-[11px]">{ticket.store.postalCode} {formatText(ticket.store.city)}</p>
+          <p className="font-bold text-[11px] tracking-wide">{formatText(ticket.store.nif)}</p>
         </div>
 
         {barcodePosition === 0 && <CodeComponent />}
 
-        {/* Ticket Info */}
         <div className={`text-[11px] ${design.layout % 2 === 0 ? 'grid grid-cols-2' : 'space-y-0.5'} gap-0.5`}>
           <p>{formatText("Factura")}: {invoiceNumber}</p>
           <p>{formatText("Fecha")}: {ticket.timestamp.toLocaleDateString("es-ES")}</p>
           <p>{formatText("Caja")}: {ticket.cashierNumber}</p>
           <p>{formatText("Hora")}: {ticket.timestamp.toLocaleTimeString("es-ES")}</p>
           <p>{formatText("Operación")}: {operationNumber}</p>
+          <p>{formatText("Tienda")}: {ticket.store.storeNumber}</p>
         </div>
 
         {design.layout === 0 && renderInfoBlock()}
         {barcodePosition === 1 && <CodeComponent />}
 
-        {/* Products */}
         <div className="space-y-1 border-t pt-2">
           {ticket.products.map((product, index) => (
             <div key={index} className="flex justify-between text-xs leading-tight">
@@ -302,7 +297,6 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
 
         {barcodePosition === 2 && <CodeComponent />}
 
-        {/* Totals */}
         <div className="border-t pt-2 space-y-1">
           <div className="text-xs space-y-0.5">
             <p className="flex justify-between">
@@ -327,7 +321,6 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         {design.layout === 2 && renderInfoBlock()}
         {design.layout === 1 && renderPromoBlock()}
 
-        {/* Payment Details */}
         {ticket.paymentMethod === "card" && (
           <div className={`text-[11px] leading-tight space-y-0.5 border-t pt-2 ${design.layout % 2 === 0 ? '' : 'text-center'} tracking-tight`}>
             <p className="font-medium">{formatText(cardType)}: {formatCardNumber("4532016798321456")}</p>
@@ -343,7 +336,6 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         {design.layout === 3 && renderInfoBlock()}
         {design.layout === 2 && renderPromoBlock()}
 
-        {/* Footer */}
         <div className={`text-center space-y-0.5 border-t pt-2 ${design.footerBg} rounded-b-lg p-2`}>
           <p className="font-semibold text-[11px]">{formatText("Gracias por su compra")}</p>
           {ticket.displayOptions.showEcoMessages && (
@@ -357,7 +349,6 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
 
         {design.layout === 3 && renderPromoBlock()}
 
-        {/* Verification Link */}
         <div className="text-[10px] text-gray-600 text-center tracking-tight">
           {formatText("Consulta tu ticket en")} {formatText(`${ticket.store.website}/ticket/${transactionId}`)}
         </div>

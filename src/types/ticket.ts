@@ -13,6 +13,7 @@ export interface Product {
 export interface Store {
   name: string;
   address: string;
+  city: string;
   nif: string;
   website: string;
   phone: string;

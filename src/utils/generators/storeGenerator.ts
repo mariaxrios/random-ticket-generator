@@ -48,7 +48,7 @@ export const generateStore = (
   const municipality = region.municipalities[Math.floor(Math.random() * region.municipalities.length)];
   const street = region.streets[Math.floor(Math.random() * region.streets.length)];
   const numero = Math.floor(Math.random() * 100) + 1;
-  const address = `${street}, ${numero} - ${municipality}`;
+  const address = `${street}, ${numero}`;
   
   // Códigos postales reales según región
   let postalCode;
@@ -99,7 +99,8 @@ export const generateStore = (
 
     return {
       name: storeData.name,
-      address,
+      address: `${address}`,
+      city: municipality,
       nif: storeData.nif,
       website: storeData.website,
       phone: `+34 ${localPhone.slice(0, 3)} ${localPhone.slice(3, 6)} ${localPhone.slice(6)}`,
@@ -114,7 +115,8 @@ export const generateStore = (
 
     return {
       name: storeName,
-      address,
+      address: `${address}`,
+      city: municipality,
       nif: `B${Math.floor(Math.random() * 90000000 + 10000000)}`,
       website: `www.${domain}.es`,
       phone: `+34 ${localPhone.slice(0, 3)} ${localPhone.slice(3, 6)} ${localPhone.slice(6)}`,
