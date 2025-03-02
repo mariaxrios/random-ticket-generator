@@ -40,9 +40,15 @@ import TicketBarcode from "./ticket/TicketBarcode";
 
 interface TicketPreviewProps {
   ticket: Ticket;
+  useColors?: boolean;
+  useOCRFont?: boolean;
 }
 
-const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
+const TicketPreview: React.FC<TicketPreviewProps> = ({ 
+  ticket, 
+  useColors = true, 
+  useOCRFont = false 
+}) => {
   // Calculate values
   const total = calculateTotal(ticket.products);
   const vat4 = calculateVAT(ticket.products, 4);
@@ -51,7 +57,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const totalDiscount = calculateTotalDiscount(ticket.products);
 
   // Generate random elements and design
-  const randomFont = useMemo(() => getRandomFont(), [ticket]);
+  const randomFont = useMemo(() => useOCRFont ? "font-mono" : getRandomFont(), [ticket, useOCRFont]);
   const barcodePosition = useMemo(() => getBarcodePosition(), [ticket]);
   const invoiceDetailsPosition = useMemo(() => Math.floor(Math.random() * 4), [ticket]);
   const ecoMessage = useMemo(() => getEcoMessage(), [ticket]);
@@ -69,12 +75,19 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const cardType = useMemo(() => getCardType(), [ticket]);
   const useQR = useMemo(() => Math.random() > 0.5, [ticket]);
 
+  // Apply color settings
+  const headerBg = useColors ? design.headerBg : "bg-white";
+  const footerBg = useColors ? design.footerBg : "bg-white";
+  const savingsColor = useColors ? design.savingsColor : "text-black";
+  const infoColor = useColors ? design.infoColor : "text-black";
+  const ecoColor = useColors ? design.ecoColor : "text-black";
+
   return (
     <div className={`w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden animate-fade-in ${design.borderStyle} border`}>
       <div className={`p-4 text-xs leading-tight tracking-tight ${design.spacing} ${randomFont}`}>
         <TicketHeader 
           store={ticket.store} 
-          headerBg={design.headerBg} 
+          headerBg={headerBg} 
           useUppercase={ticket.displayOptions.useUppercase} 
         />
 
@@ -96,8 +109,8 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
             loyaltyPoints={loyaltyPoints}
             bagsSaved={bagsSaved}
             carbonFootprint={carbonFootprint}
-            infoColor={design.infoColor}
-            ecoColor={design.ecoColor}
+            infoColor={infoColor}
+            ecoColor={ecoColor}
             layout={design.layout}
             useUppercase={ticket.displayOptions.useUppercase}
           />
@@ -118,7 +131,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
 
         <TicketProducts 
           products={ticket.products} 
-          savingsColor={design.savingsColor} 
+          savingsColor={savingsColor} 
           useUppercase={ticket.displayOptions.useUppercase} 
         />
 
@@ -127,8 +140,8 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
             loyaltyPoints={loyaltyPoints}
             bagsSaved={bagsSaved}
             carbonFootprint={carbonFootprint}
-            infoColor={design.infoColor}
-            ecoColor={design.ecoColor}
+            infoColor={infoColor}
+            ecoColor={ecoColor}
             layout={design.layout}
             useUppercase={ticket.displayOptions.useUppercase}
           />
@@ -137,7 +150,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         {design.layout === 0 && ticket.displayOptions.showPromotions && (
           <TicketPromo 
             promoMessage={promoMessage}
-            savingsColor={design.savingsColor}
+            savingsColor={savingsColor}
             promoStyle={design.promoStyle}
             useUppercase={ticket.displayOptions.useUppercase}
           />
@@ -145,7 +158,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
 
         <TicketSavings 
           totalDiscount={totalDiscount}
-          savingsColor={design.savingsColor}
+          savingsColor={savingsColor}
           layout={design.layout}
           useUppercase={ticket.displayOptions.useUppercase}
         />
@@ -177,8 +190,8 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
             loyaltyPoints={loyaltyPoints}
             bagsSaved={bagsSaved}
             carbonFootprint={carbonFootprint}
-            infoColor={design.infoColor}
-            ecoColor={design.ecoColor}
+            infoColor={infoColor}
+            ecoColor={ecoColor}
             layout={design.layout}
             useUppercase={ticket.displayOptions.useUppercase}
           />
@@ -187,7 +200,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         {design.layout === 1 && ticket.displayOptions.showPromotions && (
           <TicketPromo 
             promoMessage={promoMessage}
-            savingsColor={design.savingsColor}
+            savingsColor={savingsColor}
             promoStyle={design.promoStyle}
             useUppercase={ticket.displayOptions.useUppercase}
           />
@@ -208,8 +221,8 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
             loyaltyPoints={loyaltyPoints}
             bagsSaved={bagsSaved}
             carbonFootprint={carbonFootprint}
-            infoColor={design.infoColor}
-            ecoColor={design.ecoColor}
+            infoColor={infoColor}
+            ecoColor={ecoColor}
             layout={design.layout}
             useUppercase={ticket.displayOptions.useUppercase}
           />
@@ -218,7 +231,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
         {design.layout === 2 && ticket.displayOptions.showPromotions && (
           <TicketPromo 
             promoMessage={promoMessage}
-            savingsColor={design.savingsColor}
+            savingsColor={savingsColor}
             promoStyle={design.promoStyle}
             useUppercase={ticket.displayOptions.useUppercase}
           />
@@ -241,15 +254,15 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
           transactionId={transactionId}
           ecoMessage={ecoMessage}
           showEcoMessages={ticket.displayOptions.showEcoMessages}
-          footerBg={design.footerBg}
-          ecoColor={design.ecoColor}
+          footerBg={footerBg}
+          ecoColor={ecoColor}
           useUppercase={ticket.displayOptions.useUppercase}
         />
 
         {design.layout === 3 && ticket.displayOptions.showPromotions && (
           <TicketPromo 
             promoMessage={promoMessage}
-            savingsColor={design.savingsColor}
+            savingsColor={savingsColor}
             promoStyle={design.promoStyle}
             useUppercase={ticket.displayOptions.useUppercase}
           />
