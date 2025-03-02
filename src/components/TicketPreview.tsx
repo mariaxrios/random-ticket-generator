@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { Ticket } from "../types/ticket";
 import {
@@ -59,7 +60,7 @@ const TicketPreview: React.FC<TicketPreviewProps> = ({ ticket }) => {
   const carbonFootprint = useMemo(() => calculateCarbonFootprint(ticket.products), [ticket.products]);
   const loyaltyPoints = useMemo(() => calculateLoyaltyPoints(total), [total]);
   const operationNumber = useMemo(() => formatOperationNumber(), [ticket]);
-  const invoiceDetailsPosition = useMemo(() => Math.floor(Math.random() * 4), [ticket]);
+  // Removed duplicate declaration of invoiceDetailsPosition
   const transactionId = useMemo(() => formatTransactionId(), [ticket]);
   const invoiceNumber = useMemo(() => formatInvoiceNumber(), [ticket]);
   const barcodeNumber = useMemo(() => formatBarcodeNumber(invoiceNumber, ticket.timestamp), [invoiceNumber, ticket.timestamp]);
