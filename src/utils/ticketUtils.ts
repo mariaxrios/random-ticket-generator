@@ -11,8 +11,8 @@ export const formatCurrency = (amount: number) => {
 export const calculateTotal = (products: Product[]) => {
   return products.reduce((total, product) => {
     const price = product.price * product.quantity;
-    const discount = price * (product.discount || 0) / 100;
-    return total + (price - discount);
+    // No discount calculation
+    return total + price;
   }, 0);
 };
 
@@ -21,8 +21,8 @@ export const calculateVAT = (products: Product[], vatRate: number) => {
     .filter(p => p.vatRate === vatRate)
     .reduce((total, product) => {
       const price = product.price * product.quantity;
-      const discount = price * (product.discount || 0) / 100;
-      const netPrice = price - discount;
+      // No discount calculation
+      const netPrice = price;
       return total + (netPrice * vatRate) / (100 + vatRate);
     }, 0);
 };
@@ -44,9 +44,6 @@ export const formatText = (text: string, useUppercase: boolean) => {
 };
 
 export const calculateTotalDiscount = (products: Product[]): number => {
-  return products.reduce((acc, product) => {
-    const price = product.price * product.quantity;
-    const discount = price * (product.discount || 0) / 100;
-    return acc + discount;
-  }, 0);
+  // Since we're not applying discounts anymore, this will always return 0
+  return 0;
 };

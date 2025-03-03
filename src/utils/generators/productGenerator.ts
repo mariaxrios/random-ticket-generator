@@ -78,7 +78,7 @@ export const generateProducts = (
         products.push({
           ...product,
           quantity,
-          discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
+          discount: 0, // No discount
           isEco: shouldBeEco,
         });
       });
@@ -111,7 +111,7 @@ export const generateProducts = (
       products.push({
         ...product,
         quantity,
-        discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
+        discount: 0, // No discount
         isEco: shouldBeEco,
       });
     });
@@ -147,7 +147,7 @@ export const generateProducts = (
       products.push({
         ...product,
         quantity,
-        discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
+        discount: 0, // No discount
         isEco: shouldBeEco,
       });
     });
@@ -168,7 +168,7 @@ export const generateProducts = (
     products.push({
       ...randomProduct,
       quantity,
-      discount: Math.random() < 0.2 ? Math.floor(Math.random() * 16 + 5) : 0,
+      discount: 0, // No discount
       isEco: shouldBeEco,
     });
   }

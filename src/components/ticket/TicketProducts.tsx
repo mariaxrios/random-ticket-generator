@@ -25,21 +25,7 @@ const TicketProducts: React.FC<TicketProductsProps> = ({ products, savingsColor,
           </span>
         </div>
         <div className="text-right">
-          {product.discount ? (
-            <>
-              <span className="line-through text-gray-400">
-                {formatCurrency(product.price * product.quantity)}
-              </span>
-              <br />
-              <span className={savingsColor}>
-                -{product.discount}% = {formatCurrency(
-                  (product.price * product.quantity * (100 - product.discount)) / 100
-                )}
-              </span>
-            </>
-          ) : (
-            formatCurrency(product.price * product.quantity)
-          )}
+          {formatCurrency(product.price * product.quantity)}
         </div>
       </div>
     ))}
