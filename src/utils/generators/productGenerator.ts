@@ -1,4 +1,3 @@
-
 import { Product } from "../../types/ticket";
 import { PRODUCTS } from "../constants/products";
 
@@ -42,31 +41,25 @@ export const generateProducts = (
   let ecoCount = 0;
   let tomatoCount = 0;
   
-  // First, select tomato products if needed
   if (numTomatoProducts > 0) {
     const tomatoProducts = PRODUCTS.filter(p => p.name.toLowerCase().includes("tomate"));
     
     if (tomatoProducts.length > 0) {
-      // If we have multiple tomato varieties, select them randomly
       const selectedTomatoes = [];
       
-      // Try to get all unique tomato varieties first if there are enough requested
       if (numTomatoProducts >= tomatoProducts.length) {
         selectedTomatoes.push(...tomatoProducts);
         
-        // If we need more tomatoes than varieties, add duplicates randomly
         const additionalTomatoes = numTomatoProducts - tomatoProducts.length;
         for (let i = 0; i < additionalTomatoes; i++) {
           const randomTomato = tomatoProducts[Math.floor(Math.random() * tomatoProducts.length)];
           selectedTomatoes.push(randomTomato);
         }
       } else {
-        // If we need fewer tomatoes than available varieties, pick random unique ones
         const shuffledTomatoes = [...tomatoProducts].sort(() => Math.random() - 0.5);
         selectedTomatoes.push(...shuffledTomatoes.slice(0, numTomatoProducts));
       }
       
-      // Add tomato products
       selectedTomatoes.forEach(product => {
         const quantity = getRandomQuantity(product.unit);
         const shouldBeEco = ecoCount < numEcoProducts;
@@ -78,14 +71,13 @@ export const generateProducts = (
         products.push({
           ...product,
           quantity,
-          discount: 0, // No discount
+          discount: 0,
           isEco: shouldBeEco,
         });
       });
     }
   }
   
-  // Then, select remaining fruits and vegetables
   const remainingProduceProducts = numProduceProducts - tomatoCount;
   
   if (remainingProduceProducts > 0) {
@@ -95,12 +87,10 @@ export const generateProducts = (
            !usedProducts.has(p.name)
     );
     
-    // Select remaining fruits and vegetables randomly
     const selectedFruitsAndVeggies = fruitsAndVeggies
       .sort(() => Math.random() - 0.5)
       .slice(0, Math.min(remainingProduceProducts, fruitsAndVeggies.length));
     
-    // Add fruits and vegetables
     selectedFruitsAndVeggies.forEach(product => {
       const quantity = getRandomQuantity(product.unit);
       const shouldBeEco = ecoCount < numEcoProducts;
@@ -111,20 +101,19 @@ export const generateProducts = (
       products.push({
         ...product,
         quantity,
-        discount: 0, // No discount
+        discount: 0,
         isEco: shouldBeEco,
       });
     });
   }
   
-  // Finally, fill the rest of products
   const remainingEcoProducts = numEcoProducts - ecoCount;
   const remainingProducts = numProducts - products.length;
   let nonProduceEcoCount = 0;
   
   categories.forEach(category => {
     if (products.length >= numProducts) return;
-    if (category === "Frutas" || category === "Verduras") return; // Already processed
+    if (category === "Frutas" || category === "Verduras") return;
     
     const categoryProducts = PRODUCTS.filter(p => p.category === category);
     const availableSlots = Math.min(
@@ -147,13 +136,12 @@ export const generateProducts = (
       products.push({
         ...product,
         quantity,
-        discount: 0, // No discount
+        discount: 0,
         isEco: shouldBeEco,
       });
     });
   });
 
-  // Fill remaining products if necessary
   while (products.length < numProducts) {
     const availableProducts = PRODUCTS.filter(p => !usedProducts.has(p.name));
     if (availableProducts.length === 0) break;
@@ -168,10 +156,10 @@ export const generateProducts = (
     products.push({
       ...randomProduct,
       quantity,
-      discount: 0, // No discount
+      discount: 0,
       isEco: shouldBeEco,
     });
   }
 
-  return products.sort((a, b) => a.category.localeCompare(b.category));
+  return products;
 };
