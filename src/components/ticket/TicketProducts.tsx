@@ -31,17 +31,18 @@ const TicketProducts: React.FC<TicketProductsProps> = ({ products, savingsColor,
       {sortedProducts.map((product, index) => (
         <div key={index} className="flex justify-between text-xs leading-tight">
           <div className="flex-1">
-            <span className="font-semibold">
-              {formatText(product.name, useUppercase)} {product.isEco && formatText(getEcoLabel(), useUppercase)}
-            </span>
-            <br />
-            <span className="text-gray-600">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold">
+                {formatText(product.name, useUppercase)} {product.isEco && formatText(getEcoLabel(), useUppercase)}
+              </span>
+              <span className="text-right ml-1">
+                {formatCurrency(product.price * product.quantity)}
+              </span>
+            </div>
+            <div className="text-gray-600">
               {product.quantity} {formatText(product.unit, useUppercase)} x {formatCurrency(product.price)}
               {product.unit === 'kg' && ` (${formatCurrency(product.price * product.quantity)} / kg)`}
-            </span>
-          </div>
-          <div className="text-right">
-            {formatCurrency(product.price * product.quantity)}
+            </div>
           </div>
         </div>
       ))}
