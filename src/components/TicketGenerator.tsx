@@ -8,7 +8,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-const TicketGenerator = () => {
+interface TicketGeneratorProps {
+  useColors?: boolean;
+  useOCRFont?: boolean;
+}
+
+const TicketGenerator: React.FC<TicketGeneratorProps> = ({ useColors = true, useOCRFont = false }) => {
   const [ticket, setTicket] = useState(generateTicket(20, 30, 10, 0));
   const [totalItems, setTotalItems] = useState(20);
   const [producePercentage, setProducePercentage] = useState(30);
@@ -177,7 +182,7 @@ const TicketGenerator = () => {
       </div>
 
       <div className="bg-gray-50 p-8 rounded-xl shadow-sm">
-        <TicketPreview ticket={ticket} />
+        <TicketPreview ticket={ticket} useColors={useColors} useOCRFont={useOCRFont} />
       </div>
     </div>
   );

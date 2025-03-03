@@ -28,7 +28,7 @@ const Index = () => {
           <Label htmlFor="useOCRFont">Usar fuente OCR-B</Label>
         </div>
       </div>
-      <TicketGenerator ticketProps={{ useColors, useOCRFont }} />
+      <TicketGenerator useColors={useColors} useOCRFont={useOCRFont} />
     </div>
   );
 };
