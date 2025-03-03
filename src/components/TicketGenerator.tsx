@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 
 interface TicketGeneratorProps {
@@ -13,7 +14,7 @@ interface TicketGeneratorProps {
   useOCRFont?: boolean;
 }
 
-const TicketGenerator: React.FC<TicketGeneratorProps> = ({ useColors = true, useOCRFont = false }) => {
+const TicketGenerator: React.FC<TicketGeneratorProps> = () => {
   const [ticket, setTicket] = useState(generateTicket(20, 30, 10, 0));
   const [totalItems, setTotalItems] = useState(20);
   const [producePercentage, setProducePercentage] = useState(30);
@@ -21,6 +22,8 @@ const TicketGenerator: React.FC<TicketGeneratorProps> = ({ useColors = true, use
   const [tomatoPercentage, setTomatoPercentage] = useState(0);
   const [useRealStores, setUseRealStores] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"card" | "cash">("card");
+  const [useColors, setUseColors] = useState(true);
+  const [useOCRFont, setUseOCRFont] = useState(false);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
@@ -102,6 +105,25 @@ const TicketGenerator: React.FC<TicketGeneratorProps> = ({ useColors = true, use
                 <Label htmlFor="cash">Efectivo</Label>
               </div>
             </RadioGroup>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="useColors" 
+                checked={useColors} 
+                onCheckedChange={(checked) => setUseColors(checked as boolean)} 
+              />
+              <Label htmlFor="useColors">Mostrar colores en el ticket</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="useOCRFont" 
+                checked={useOCRFont} 
+                onCheckedChange={(checked) => setUseOCRFont(checked as boolean)} 
+              />
+              <Label htmlFor="useOCRFont">Usar fuente OCR-B</Label>
+            </div>
           </div>
 
           <div>
