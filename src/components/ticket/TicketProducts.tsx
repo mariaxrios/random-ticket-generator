@@ -40,8 +40,11 @@ const TicketProducts: React.FC<TicketProductsProps> = ({ products, savingsColor,
               </span>
             </div>
             <div className="text-gray-600">
-              {product.quantity} {formatText(product.unit, useUppercase)} x {formatCurrency(product.price)}
-              {product.unit === 'kg' && ` (${formatCurrency(product.price * product.quantity)} / kg)`}
+              {product.quantity} {formatText(product.unit, useUppercase)} x {
+                product.unit === 'kg' 
+                  ? `${formatCurrency(product.price)}/kg`
+                  : formatCurrency(product.price)
+              }
             </div>
           </div>
         </div>
